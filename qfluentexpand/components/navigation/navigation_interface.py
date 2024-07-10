@@ -15,8 +15,8 @@ from qfluentwidgets import NavigationInterface
 class Navigation(NavigationInterface):
     """ Navigation interface """
 
-    def __init__(self, showMenuButton=True, showReturnButton=False, collapsible=True, parent=None):
-        super().__init__(showMenuButton, showReturnButton, collapsible, parent=parent)
+    def __init__(self, parent=None, showMenuButton=True, showReturnButton=False, collapsible=True):
+        super().__init__(parent=parent, showMenuButton=showMenuButton, showReturnButton=showReturnButton, collapsible=collapsible)
 
 
     showMenu = Property(bool, fset=lambda self, value: self.panel.setMenuButtonVisible(value),
