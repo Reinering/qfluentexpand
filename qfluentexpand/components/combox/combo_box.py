@@ -195,10 +195,8 @@ class MSEComboBox(Line, ComboBoxBase):
         super().setPlaceholderText(self._placeholderText)
 
     def _onItemChecked(self, checked):
-        print("onItemChecked")
         action = self.sender()
         index = action.objectName().split("_")[-1]
-        print(index)
         if checked:
             objName = action.objectName().replace("Checkbox_C_", "LineEdit_L_")
             lineEdit = self.findChild(LineEdit, objName)
