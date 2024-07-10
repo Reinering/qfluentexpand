@@ -31,7 +31,7 @@ class NaviInterfacePlugin(NavigationPlugin, QDesignerCustomWidgetInterface):
         return super().icon("NavigationView") 
 
     def name(self):
-        return "NavigationInterface"
+        return "Navigation"
 
     def includeFile(self):
         """"

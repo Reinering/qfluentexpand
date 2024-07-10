@@ -56,4 +56,4 @@ class PluginBase:
 		""""
 		package name
 		"""
-		return "fluent_widgets"
+		return "qfluentexpand"
