@@ -10,7 +10,7 @@ import sys
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication, QWidget, QCompleter
 from qfluentwidgets import ComboBox, setTheme, Theme, setThemeColor, EditableComboBox
-from qfluentextends.components.combox.combo_box import MSEComboBox
+from qfluentexpand.components.combox.combo_box import MSEComboBox
 
 class Demo(QWidget):
 
@@ -43,12 +43,9 @@ class Demo(QWidget):
 
 if __name__ == '__main__':
     # enable dpi scale
-    QApplication.setHighDpiScaleFactorRoundingPolicy(
-        Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
+    QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.Ceil)
 
     app = QApplication(sys.argv)
     w = Demo()
     w.show()
-    app.exec_()
+    app.exec()
