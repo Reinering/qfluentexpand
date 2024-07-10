@@ -8,9 +8,9 @@ email: nbxlc@hotmail.com
 from PySide6.QtCore import Qt
 from PySide6.QtDesigner import QDesignerCustomWidgetInterface
 
-from qfluentwidgets import NavigationPanel, Pivot
+# from qfluentwidgets import NavigationPanel, Pivot
 
-from qfluentexpand.components.navigation.navigation_interface import NavigationInterface
+from qfluentexpand.components.navigation.navigation_interface import Navigation
 
 from base import PluginBase
 
@@ -25,7 +25,7 @@ class NaviInterfacePlugin(NavigationPlugin, QDesignerCustomWidgetInterface):
     """ Navigation interface plugin """
     
     def createWidget(self, parent):
-        return NavigationInterface(parent, True, True)
+        return Navigation(parent, True, True)
 
     def icon(self):
         return super().icon("NavigationView") 

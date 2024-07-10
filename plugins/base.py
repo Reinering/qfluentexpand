@@ -1,4 +1,11 @@
-# coding:utf-8
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+author: Reiner
+email: nbxlc@hotmail.com
+"""
+
+
 import re
 
 from PySide6.QtGui import QIcon
