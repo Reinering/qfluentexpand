@@ -9,7 +9,7 @@ email: nbxlc@hotmail.com
 from PySide6.QtCore import Qt
 from PySide6.QtDesigner import QDesignerCustomWidgetInterface
 
-from fluent_widgets.components.combox.combo_box import MSEComboBox
+from qfluentexpand.components.combox.combo_box import MSEComboBox
 from basic_input import BasicInputPlugin
 
 
