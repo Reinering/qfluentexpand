@@ -16,8 +16,9 @@ class PluginBase:
 
 	Factory = None
 
+	#  这个init必须这么写，不然会报错
 	def __init__(self, parent=None):
-		super().__init__(parent)
+		super().__init__()
 		self.initialized = False
 		self.factory = None
 		self.pattern = re.compile(r'(?<!^)(?=[A-Z])')
