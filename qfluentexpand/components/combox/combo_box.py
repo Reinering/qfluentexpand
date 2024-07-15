@@ -49,9 +49,11 @@ class MSEComboBox(Line, ComboBoxBase):
         self.clearButton.clicked.disconnect()
         self.clearButton.clicked.connect(self._onClearButtonClicked)
 
+        self.items = []
+        #
         self.selectedItems = []
         self.selectedWidgets = []
-        self.items = []
+        self.widgets = []
 
     def setCompleterMenu(self, menu):
         super().setCompleterMenu(menu)
@@ -84,6 +86,15 @@ class MSEComboBox(Line, ComboBoxBase):
         else:
             self._showComboMenu()
 
+    # 下拉按钮关闭事件
+    def _onDropMenuClosed(self):
+        if sys.platform != "win32":
+            self.dropMenu = None
+        else:
+            pos = self.mapFromGlobal(QCursor.pos())
+            if not self.rect().contains(pos):
+                self.dropMenu = None
+
     def _closeComboMenu(self):
         if not self.dropMenu:
             return
@@ -97,8 +108,8 @@ class MSEComboBox(Line, ComboBoxBase):
             return
 
         menu = self._createComboMenu()
-        i = 0
-        for item in self.items:
+        self.widgets.clear()
+        for i, item in enumerate(self.items):
             tmpWidget = QWidget(menu)
 
             hBoxLayout = QHBoxLayout(tmpWidget)
@@ -129,7 +140,10 @@ class MSEComboBox(Line, ComboBoxBase):
 
             menu.addWidget(tmpWidget)
 
-            i += 1
+            tmpList = []
+            tmpList.append(checkbox)
+            tmpList.append(lineEdit)
+            self.widgets.append(tmpList)
 
         if menu.view.width() < self.width():
             menu.view.setMinimumWidth(self.width())
@@ -194,14 +208,12 @@ class MSEComboBox(Line, ComboBoxBase):
 
         super().setPlaceholderText(self._placeholderText)
 
-    def _onItemChecked(self, checked):
+    def _onItemChecked(self):
         action = self.sender()
+        checked = action.isChecked()
         index = action.objectName().split("_")[-1]
         if checked:
-            objName = action.objectName().replace("Checkbox_C_", "LineEdit_L_")
-            lineEdit = self.findChild(LineEdit, objName)
-            if lineEdit:
-                lineEdit.setEnabled(True)
+            self.widgets[int(index)][1].setEnabled(True)
 
             self.selectedItems.append(index)
             if self.isReadOnly():
@@ -209,10 +221,7 @@ class MSEComboBox(Line, ComboBoxBase):
                 if len(self.selectedItems) == 1:
                     super().setPlaceholderText('')
         else:
-            objName = action.objectName().replace("Checkbox_C_", "LineEdit_L_")
-            lineEdit = self.findChild(LineEdit, objName)
-            if lineEdit:
-                lineEdit.setEnabled(False)
+            self.widgets[int(index)][1].setEnabled(False)
 
             if self.isReadOnly():
                 delButton = self.findChild(PushButton, "DeleteButton_C_" + index)
@@ -237,17 +246,17 @@ class MSEComboBox(Line, ComboBoxBase):
     def _onDeleteButtonClicked(self):
         action = self.sender()
         index = action.objectName().split("_")[-1]
-        objName = action.objectName().replace("Checkbox_C_", "LineEdit_L_")
-        lineEdit = self.findChild(LineEdit, objName)
-        if lineEdit:
-            lineEdit.setEnabled(False)
+        self.widgets[int(index)][1].setEnabled(False)
+
         delButton = self.findChild(PushButton, "DeleteButton_C_" + index)
         if delButton:
             self._removeDelButton(delButton)
             self.selectedItems.remove(index)
+        if len(self.selectedWidgets) == 0:
+            super().setPlaceholderText(self._placeholderText)
 
     def _onReturnPressed(self):
-        if not self.text():
+        if self.isReadOnly() or not self.text():
             return
 
         index = self.findText(self.text())
@@ -259,16 +268,13 @@ class MSEComboBox(Line, ComboBoxBase):
             self.setCurrentIndex(self.count() - 1)
 
     def _onComboTextChanged(self, text: str):
-        self._currentIndex = -1
+        if self.isReadOnly():
+            return
+
         self.currentTextChanged.emit(text)
 
-        for i, item in enumerate(self.items):
-            if item.text == text:
-                self._currentIndex = i
-                self.currentIndexChanged.emit(i)
-
-    def _onDropMenuClosed(self):
-        self.dropMenu = None
-
     def _onClearButtonClicked(self):
-        pass
+        if self.isReadOnly():
+            self.clear()
+        else:
+            LineEdit.clear(self)
