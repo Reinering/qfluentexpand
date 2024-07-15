@@ -10,7 +10,7 @@ import sys
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication, QWidget, QCompleter
 from qfluentwidgets import ComboBox, setTheme, Theme, setThemeColor, EditableComboBox
-from qfluentexpand.components.combox.combo_box import MSEComboBox
+from qfluentexpand.components.combox.combo_box import MSEComboBox, MSECComboBox
 
 class Demo(QWidget):
 
@@ -41,6 +41,18 @@ class Demo(QWidget):
         self.comboBox1_2.setReadOnly(False)
         self.comboBox1_2.currentTextChanged.connect(print)
         self.comboBox1_2.move(200, 250)
+
+        items = {'shoko': ["Item 1", "Item 2", "Item 3", "Item 4"],
+                                   '西宫硝子': ["Item 1", "Item 2", "Item 3", "Item 4"],
+                                   '宝多六花': ["Item 1", "Item 2", "Item 3", "Item 4"],
+                                   '小鸟游六花': ["Item 1", "Item 2", "Item 3", "Item 4"]}
+        self.comboBox2_1 = MSECComboBox(self)
+        self.comboBox2_1.setMinimumWidth(200)
+        self.comboBox2_1.setPlaceholderText("选择一个脑婆")
+        self.comboBox2_1.addItems(items)
+        self.comboBox2_1.setReadOnly(False)
+        self.comboBox2_1.currentTextChanged.connect(print)
+        self.comboBox2_1.move(200, 250)
 
         self.resize(500, 500)
         self.setStyleSheet('Demo{background:white}')
