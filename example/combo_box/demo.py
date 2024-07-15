@@ -18,21 +18,29 @@ class Demo(QWidget):
         super().__init__()
 
         items = ['shoko 🥰', '西宫硝子', 'aiko', '柳井爱子']
-        self.comboBox = MSEComboBox(self)
-        self.comboBox.setMinimumWidth(200)
-        self.comboBox.setPlaceholderText("选择一个脑婆")
-        self.comboBox.addItems(items)
-        # self.hBoxLayout.addWidget(self.comboBox, 0, Qt.AlignCenter)
+        self.comboBox1_1 = MSEComboBox(self)
+        self.comboBox1_1.setMinimumWidth(200)
+        self.comboBox1_1.setPlaceholderText("选择一个脑婆")
+        self.comboBox1_1.addItems(items)
+        # self.hBoxLayout.addWidget(self.comboBox1_1, 0, Qt.AlignCenter)
 
 
         # self.comboBox.setReadOnly(False)
         # self.comboBox.setCurrentIndex(0)
-        self.comboBox.currentTextChanged.connect(print)
-        self.comboBox.move(200, 200)
+        self.comboBox1_1.currentTextChanged.connect(print)
+        self.comboBox1_1.move(200, 200)
 
         # NOTE: Completer is only applicable to EditableComboBox
         # self.completer = QCompleter(items, self)
         # self.comboBox.setCompleter(self.completer)
+
+        self.comboBox1_2 = MSEComboBox(self)
+        self.comboBox1_2.setMinimumWidth(200)
+        self.comboBox1_2.setPlaceholderText("选择一个脑婆")
+        self.comboBox1_2.addItems(items)
+        self.comboBox1_2.setReadOnly(False)
+        self.comboBox1_2.currentTextChanged.connect(print)
+        self.comboBox1_2.move(200, 250)
 
         self.resize(500, 500)
         self.setStyleSheet('Demo{background:white}')
