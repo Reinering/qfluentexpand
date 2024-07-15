@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (
 
 )
 
-from qfluentwidgets import CheckBox, MenuAnimationType, PushButton
+from qfluentwidgets import CheckBox, MenuAnimationType, PushButton, EditableComboBox
 from qfluentwidgets.components.widgets.line_edit import LineEdit, LineEditButton, CompleterMenu
 from qfluentwidgets.common.animation import TranslateYAnimation
 from qfluentwidgets.common.font import setFont
@@ -184,12 +184,7 @@ class MSEComboBox(Line, ComboBoxBase):
         pass
 
     def itemData(self, index):
-        objName = "LineEdit_L_" + str(index)
-        lineEdit = self.findChild(LineEdit, objName)
-        if lineEdit:
-            lineEdit.setEnabled(True)
-
-        return lineEdit.text()
+        return self.widgets[index][1].text()
 
     def itemDatas(self):
         return [self.itemData(index) for index in self.selectedItems]
@@ -223,11 +218,11 @@ class MSEComboBox(Line, ComboBoxBase):
         else:
             self.widgets[int(index)][1].setEnabled(False)
 
+            self.selectedItems.remove(index)
             if self.isReadOnly():
                 delButton = self.findChild(PushButton, "DeleteButton_C_" + index)
                 if delButton:
                     self._removeDelButton(delButton)
-                    self.selectedItems.remove(index)
                 if len(self.selectedItems) == 0:
                     super().setPlaceholderText(self._placeholderText)
 
