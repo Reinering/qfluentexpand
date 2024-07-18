@@ -57,7 +57,6 @@ class MSEComboBox(Line, ComboBoxBase):
 
     def setCompleterMenu(self, menu):
         super().setCompleterMenu(menu)
-        menu.activated.connect(self.__onActivated)
 
     def currentText(self):
         return self.text()
@@ -78,6 +77,43 @@ class MSEComboBox(Line, ComboBoxBase):
                 self.isHover = False
 
         return super().eventFilter(obj, e)
+
+    def addItem(self, text, icon: Union[str, QIcon, FluentIconBase] = None, userData=None):
+        item = ComboItem(text, icon, userData)
+        self.items.append(item)
+
+    def addItems(self, texts: Iterable[str]):
+        self.clear()
+        for text in texts:
+            self.addItem(text)
+
+    def insertItem(self, index: int, text: str, icon: Union[str, QIcon, FluentIconBase] = None, userData=None):
+        item = ComboItem(text, icon, userData)
+        self.items.insert(index, item)
+
+    def removeItem(self, index: int):
+        pass
+
+    def itemData(self, index):
+        return self.widgets[index][1].text()
+
+    def itemDatas(self):
+        return [self.itemData(index) for index in self.selectedItems]
+
+    def clear(self):
+        """ Clears the combobox, removing all items. """
+
+        self.items.clear()
+        self.selectedItems.clear()
+        self.widgets.clear()
+
+        if self.isReadOnly():
+            for widget in self.selectedWidgets:
+                self.hBoxLayout.removeItem(widget)
+                widget.deleteLater()
+            self.selectedWidgets.clear()
+
+        super().setPlaceholderText(self._placeholderText)
 
     # 下拉按钮点击事件
     def _toggleComboMenu(self, event):
@@ -119,20 +155,23 @@ class MSEComboBox(Line, ComboBoxBase):
             checkbox = CheckBox()
             checkbox.setMaximumSize(29, 20)
             checkbox.setObjectName("Checkbox_C_" + str(i))
-            # checkbox.toggled.connect(self._onItemToggled)
             lineEdit = LineEdit(menu)
             lineEdit.resize(100, 20)
             lineEdit.setPlaceholderText("{}: 请输入".format(item.text))
             lineEdit.setObjectName("LineEdit_L_" + str(i))
 
-            if str(i) in self.selectedItems:
+            if i in self.selectedItems:
                 checkbox.setChecked(True)
                 lineEdit.setEnabled(True)
             else:
                 checkbox.setChecked(False)
                 lineEdit.setEnabled(False)
 
-            checkbox.stateChanged.connect(self._onItemChecked)
+            if item.userData:
+                lineEdit.setText(item.userData)
+
+            checkbox.stateChanged.connect(lambda state, index=i: self._onItemChecked(state, index))
+            lineEdit.textChanged.connect(lambda text, index=i: self._onItemTextChanged(text, index))
             hBoxLayout.addWidget(checkbox)
             hBoxLayout.addWidget(lineEdit)
 
@@ -167,46 +206,11 @@ class MSEComboBox(Line, ComboBoxBase):
             menu.view.adjustSize(pu, MenuAnimationType.PULL_UP)
             menu.exec(pu, aniType=MenuAnimationType.PULL_UP)
 
-    def addItem(self, text, icon: Union[str, QIcon, FluentIconBase] = None, userData=None):
-        item = ComboItem(text, icon, userData)
-        self.items.append(item)
+    def _onItemTextChanged(self, text, index):
+        self.items[index].userData = text
 
-    def addItems(self, texts: Iterable[str]):
-        self.clear()
-        for text in texts:
-            self.addItem(text)
-
-    def insertItem(self, index: int, text: str, icon: Union[str, QIcon, FluentIconBase] = None, userData=None):
-        item = ComboItem(text, icon, userData)
-        self.items.insert(index, item)
-
-    def removeItem(self, index: int):
-        pass
-
-    def itemData(self, index):
-        return self.widgets[index][1].text()
-
-    def itemDatas(self):
-        return [self.itemData(index) for index in self.selectedItems]
-
-    def clear(self):
-        """ Clears the combobox, removing all items. """
-
-        self.items.clear()
-        self.selectedItems.clear()
-
-        if self.isReadOnly():
-            for widget in self.selectedWidgets:
-                self.hBoxLayout.removeItem(widget)
-                widget.deleteLater()
-            self.selectedWidgets.clear()
-
-        super().setPlaceholderText(self._placeholderText)
-
-    def _onItemChecked(self):
-        action = self.sender()
-        checked = action.isChecked()
-        index = action.objectName().split("_")[-1]
+    def _onItemChecked(self, checked, index):
+        checked = self.widgets[index][0].isChecked()
         if checked:
             self.widgets[int(index)][1].setEnabled(True)
 
@@ -220,7 +224,7 @@ class MSEComboBox(Line, ComboBoxBase):
 
             self.selectedItems.remove(index)
             if self.isReadOnly():
-                delButton = self.findChild(PushButton, "DeleteButton_C_" + index)
+                delButton = self.findChild(PushButton, "DeleteButton_C_" + str(index))
                 if delButton:
                     self._removeDelButton(delButton)
                 if len(self.selectedItems) == 0:
@@ -228,22 +232,28 @@ class MSEComboBox(Line, ComboBoxBase):
 
     def _addDeleteButton(self, index, text):
         delButton = PushButton(FIF.CLOSE, text)
-        delButton.setObjectName("DeleteButton_C_" + index)
-        delButton.clicked.connect(self._onDeleteButtonClicked)
-        self.hBoxLayout.insertWidget(len(self.selectedItems), delButton, 0, Qt.AlignLeft)
-        self.selectedWidgets.append(delButton)
+        delButton.setObjectName("DeleteButton_C_" + str(index))
+        delButton.clicked.connect(lambda index=index, text=text: self._onDeleteButtonClicked(index, text))
+
+        insert_position = 0
+        for i, widget in enumerate(self.selectedWidgets):
+            current_index = int(widget.objectName().split('_')[-1])
+            if current_index > index:
+                break
+            insert_position = i + 1
+
+        self.hBoxLayout.insertWidget(insert_position, delButton, 0, Qt.AlignLeft)
+        self.selectedWidgets.insert(insert_position, delButton)
 
     def _removeDelButton(self, widget):
         self.selectedWidgets.remove(widget)
         self.hBoxLayout.removeWidget(widget)
         widget.deleteLater()
 
-    def _onDeleteButtonClicked(self):
-        action = self.sender()
-        index = action.objectName().split("_")[-1]
+    def _onDeleteButtonClicked(self, index, text):
         self.widgets[int(index)][1].setEnabled(False)
 
-        delButton = self.findChild(PushButton, "DeleteButton_C_" + index)
+        delButton = self.findChild(PushButton, "DeleteButton_C_" + str(index))
         if delButton:
             self._removeDelButton(delButton)
             self.selectedItems.remove(index)
@@ -286,6 +296,8 @@ class MSECComboBox(MSEComboBox):
         self.setTextMargins(0, 0, 29, 0)
         FluentStyleSheet.LINE_EDIT.apply(self)
 
+        self.widgets = {}
+
     def addItem(self, text: str, datas: list, icon: Union[str, QIcon, FluentIconBase] = None, userData=None):
         item = ComBoxItem(text, datas, icon, userData)
         self.items.append(item)
@@ -302,11 +314,11 @@ class MSECComboBox(MSEComboBox):
     def removeItem(self, index: int):
         pass
 
-    def itemData(self, index):
-        return self.widgets[index][1].currentText()
+    def itemData(self, key):
+        return self.widgets[key][1].currentText()
 
     def itemDatas(self):
-        return [self.itemData(index) for index in self.selectedItems]
+        return {key: self.itemData(key) for key in self.selectedItems}
 
     def clear(self):
         """ Clears the combobox, removing all items. """
@@ -340,7 +352,6 @@ class MSECComboBox(MSEComboBox):
             checkbox = CheckBox()
             checkbox.setMaximumSize(29, 20)
             checkbox.setObjectName("Checkbox_C_" + str(i))
-            # checkbox.toggled.connect(self._onItemToggled)
 
             combobox = EditableComboBox(menu)
             combobox.resize(100, 20)
@@ -349,14 +360,18 @@ class MSECComboBox(MSEComboBox):
             combobox.setCurrentIndex(-1)
             combobox.setObjectName("ComboBox_L_" + str(i))
 
-            if str(i) in self.selectedItems:
+            if item.text in self.selectedItems:
                 checkbox.setChecked(True)
                 combobox.setEnabled(True)
             else:
                 checkbox.setChecked(False)
                 combobox.setEnabled(False)
 
-            checkbox.stateChanged.connect(self._onItemChecked)
+            if item.userData:
+                combobox.setText(item.userData)
+
+            checkbox.stateChanged.connect(lambda state, index=i, key=item.text: self._onItemChecked(state, index, key))
+            combobox.textChanged.connect(lambda text, index=i, key=item.text: self._onItemTextChanged(text, index, key))
             hBoxLayout.addWidget(checkbox)
             hBoxLayout.addWidget(combobox)
 
@@ -367,7 +382,7 @@ class MSECComboBox(MSEComboBox):
             tmpList = []
             tmpList.append(checkbox)
             tmpList.append(combobox)
-            self.widgets.append(tmpList)
+            self.widgets[item.text] = tmpList
 
         if menu.view.width() < self.width():
             menu.view.setMinimumWidth(self.width())
@@ -391,55 +406,61 @@ class MSECComboBox(MSEComboBox):
             menu.view.adjustSize(pu, MenuAnimationType.PULL_UP)
             menu.exec(pu, aniType=MenuAnimationType.PULL_UP)
 
-    def _onItemChecked(self):
-        print("onItemChecked")
-        action = self.sender()
-        checked = action.isChecked()
-        index = action.objectName().split("_")[-1]
+    def _onItemTextChanged(self, text, index, key):
+        self.items[index].userData = text
+
+    def _onItemChecked(self, checked, index, key):
+        checked = self.widgets[key][0].isChecked()
 
         if checked:
-            self.widgets[int(index)][1].setEnabled(True)
+            self.widgets[key][1].setEnabled(True)
 
-            self.selectedItems.append(index)
+            self.selectedItems.append(key)
             if self.isReadOnly():
-                self._addDeleteButton(index, self.items[int(index)].text)
+                self._addDeleteButton(index, key)
                 if len(self.selectedItems) == 1:
                     tmp = self._placeholderText
                     self.setPlaceholderText('')
                     self._placeholderText = tmp
 
         else:
-            self.widgets[int(index)][1].setEnabled(False)
+            self.widgets[key][1].setEnabled(False)
 
             if self.isReadOnly():
-                delButton = self.findChild(PushButton, "DeleteButton_C_" + index)
+                delButton = self.findChild(PushButton, "DeleteButton_C_" + str(index))
                 if delButton:
                     self._removeDelButton(delButton)
-                    self.selectedItems.remove(index)
+                    self.selectedItems.remove(key)
                 if len(self.selectedItems) == 0:
                     self.setPlaceholderText(self._placeholderText)
 
     def _addDeleteButton(self, index, text):
         delButton = PushButton(FIF.CLOSE, text)
-        delButton.setObjectName("DeleteButton_C_" + index)
-        delButton.clicked.connect(self._onDeleteButtonClicked)
-        self.hBoxLayout.insertWidget(len(self.selectedItems), delButton, 0, Qt.AlignLeft)
-        self.selectedWidgets.append(delButton)
+        delButton.setObjectName("DeleteButton_C_" + str(index))
+        delButton.clicked.connect(lambda index=index, text=text: self._onDeleteButtonClicked(index, text))
+
+        insert_position = 0
+        for i, widget in enumerate(self.selectedWidgets):
+            current_index = int(widget.objectName().split('_')[-1])
+            if current_index > index:
+                break
+            insert_position = i + 1
+
+        self.hBoxLayout.insertWidget(insert_position, delButton, 0, Qt.AlignLeft)
+        self.selectedWidgets.insert(insert_position, delButton)
 
     def _removeDelButton(self, widget):
         self.selectedWidgets.remove(widget)
         self.hBoxLayout.removeWidget(widget)
         widget.deleteLater()
 
-    def _onDeleteButtonClicked(self):
-        action = self.sender()
-        index = action.objectName().split("_")[-1]
-        self.widgets[int(index)][1].setEnabled(True)
+    def _onDeleteButtonClicked(self, index, key):
+        self.widgets[key][1].setEnabled(False)
 
-        delButton = self.findChild(PushButton, "DeleteButton_C_" + index)
+        delButton = self.findChild(PushButton, "DeleteButton_C_" + str(index))
         if delButton:
             self._removeDelButton(delButton)
-            self.selectedItems.remove(index)
+            self.selectedItems.remove(key)
 
         if len(self.selectedWidgets) == 0:
             self.setPlaceholderText(self._placeholderText)
