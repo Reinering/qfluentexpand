@@ -95,7 +95,12 @@ class MSEComboBox(Line, ComboBoxBase):
         pass
 
     def itemData(self, index):
-        return self.widgets[index][1].text()
+        text = None
+        try:
+            text = self.widgets[index][1].currentText()
+        except Exception as e:
+            print(e)
+        return text
 
     def itemDatas(self):
         return [self.itemData(index) for index in self.selectedItems]
@@ -315,10 +320,20 @@ class MSECComboBox(MSEComboBox):
         pass
 
     def itemData(self, key):
-        return self.widgets[key][1].currentText()
+        text = None
+        try:
+            text = self.widgets[key][1].currentText()
+        except Exception as e:
+            print(e)
+        return text
 
     def itemDatas(self):
         return {key: self.itemData(key) for key in self.selectedItems}
+
+    def setItemReadOnly(self, key, enabled: bool):
+        for item in self.items:
+            if item.text == key:
+                item.readOnly = enabled
 
     def clear(self):
         """ Clears the combobox, removing all items. """
@@ -369,6 +384,8 @@ class MSECComboBox(MSEComboBox):
 
             if item.userData:
                 combobox.setText(item.userData)
+            if item.readOnly:
+                combobox.setReadOnly(True)
 
             checkbox.stateChanged.connect(lambda state, index=i, key=item.text: self._onItemChecked(state, index, key))
             combobox.textChanged.connect(lambda text, index=i, key=item.text: self._onItemTextChanged(text, index, key))
@@ -486,6 +503,7 @@ class ComBoxItem:
         self.text = text
         self.datas = datas
         self.userData = userData
+        self.readOnly = False
         self.icon = icon
 
     @property
