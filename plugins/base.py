@@ -17,7 +17,7 @@ class PluginBase:
 	Factory = None
 
 	#  这个init必须这么写，不然会报错
-	def __init__(self, parent=None):
+	def __init__(self):
 		super().__init__()
 		self.initialized = False
 		self.factory = None

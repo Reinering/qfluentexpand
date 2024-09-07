@@ -5,8 +5,6 @@ author: Reiner
 email: nbxlc@hotmail.com
 """
 
-from PySide6.QtCore import Qt
-from PySide6.QtDesigner import QDesignerCustomWidgetInterface
 
 from base import PluginBase
 
