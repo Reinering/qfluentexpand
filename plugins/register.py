@@ -27,7 +27,7 @@ def main():
 
     try:
         print("registering widgets")
-        for filename in os.listdir('.'):
+        for filename in os.listdir('.'):        # 路径需要根据插件目录改为绝对路径
             # print("filename", filename)
             if filename.endswith('.py') and not filename.startswith('_'):
                 # plugins += get_modules(__import__(f"{filename}".replace('.py', '')))

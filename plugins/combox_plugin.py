@@ -9,44 +9,52 @@ email: nbxlc@hotmail.com
 from PySide6.QtCore import Qt
 from PySide6.QtDesigner import QDesignerCustomWidgetInterface
 
-from qfluentexpand.components.combox.combo_box import MSEComboBox, MSECComboBox
+from qfluentexpand.components.combox.combo_box import MSEComboBox, MSECComboBox, MSComboBox
 from basic_input import BasicInputPlugin
+from base import PluginBase
 
 
 
-class MSEComboBoxPlugin(BasicInputPlugin, QDesignerCustomWidgetInterface):
+class ComboBoxPlugin(PluginBase):
+
+    def icon(self):
+        return super().icon('ComboBox')
+
+    def group(self):
+        return super().group() + ' (ComboBox)'
+
+    def includeFile(self):
+        """"
+        package name
+        """
+        return "qfluentexpand.components.combox.combo_box"
+
+
+class MSComboBoxPlugin(ComboBoxPlugin, QDesignerCustomWidgetInterface):
+    """ Combo box plugin """
+
+    def createWidget(self, parent):
+        return MSComboBox(parent)
+
+    def name(self):
+        return "MSComboBox"
+
+
+class MSEComboBoxPlugin(ComboBoxPlugin, QDesignerCustomWidgetInterface):
     """ Combo box plugin """
 
     def createWidget(self, parent):
         return MSEComboBox(parent)
 
-    def icon(self):
-        return super().icon('ComboBox')
-
     def name(self):
         return "MSEComboBox"
 
-    def includeFile(self):
-        """"
-        package name
-        """
-        return "qfluentexpand.components.combox.combo_box"
 
-
-class MSECComboBoxPlugin(BasicInputPlugin, QDesignerCustomWidgetInterface):
+class MSECComboBoxPlugin(ComboBoxPlugin, QDesignerCustomWidgetInterface):
     """ Combo box plugin """
 
     def createWidget(self, parent):
         return MSECComboBox(parent)
 
-    def icon(self):
-        return super().icon('ComboBox')
-
     def name(self):
         return "MSECComboBox"
-
-    def includeFile(self):
-        """"
-        package name
-        """
-        return "qfluentexpand.components.combox.combo_box"

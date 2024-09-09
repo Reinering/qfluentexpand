@@ -20,6 +20,15 @@ class NavigationPlugin(PluginBase):
     def group(self):
         return super().group() + ' (Navigation)'
 
+    def icon(self):
+        return super().icon("NavigationView")
+
+    def includeFile(self):
+        """"
+        package name
+        """
+        return "qfluentexpand.components.navigation.navigation_interface"
+
 
 class NaviInterfacePlugin(NavigationPlugin, QDesignerCustomWidgetInterface):
     """ Navigation interface plugin """
@@ -27,17 +36,8 @@ class NaviInterfacePlugin(NavigationPlugin, QDesignerCustomWidgetInterface):
     def createWidget(self, parent):
         return Navigation(parent, True, True)
 
-    def icon(self):
-        return super().icon("NavigationView") 
-
     def name(self):
         return "Navigation"
-
-    def includeFile(self):
-        """"
-        package name
-        """
-        return "qfluentexpand.components.navigation.navigation_interface"
 
 
 # class NavigationPanelPlugin(NavigationPlugin, QDesignerCustomWidgetInterface):

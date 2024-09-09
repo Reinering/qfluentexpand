@@ -24,6 +24,9 @@ class SelectorPlugin(PluginBase):
     def icon(self):
         return super().icon("DropDownButton")
 
+    def includeFile(self):
+        return "qfluentexpand.components.line.selector"
+
 
 class FilePathSelectorPlugin(SelectorPlugin, QDesignerCustomWidgetInterface):
 
@@ -33,9 +36,6 @@ class FilePathSelectorPlugin(SelectorPlugin, QDesignerCustomWidgetInterface):
     def name(self):
         return "FilePathSelector"
 
-    def includeFile(self):
-        return "qfluentexpand.components.line.selector"
-
 
 class FolderPathSelectorPlugin(SelectorPlugin, QDesignerCustomWidgetInterface):
 
@@ -44,6 +44,3 @@ class FolderPathSelectorPlugin(SelectorPlugin, QDesignerCustomWidgetInterface):
 
     def name(self):
         return "FolderPathSelector"
-
-    def includeFile(self):
-        return "qfluentexpand.components.line.selector"
