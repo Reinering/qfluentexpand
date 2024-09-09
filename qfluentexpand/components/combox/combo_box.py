@@ -238,7 +238,7 @@ class MSEComboBox(Line, ComboBoxBase):
     def _addDeleteButton(self, index, text):
         delButton = PushButton(FIF.CLOSE, text)
         delButton.setObjectName("DeleteButton_C_" + str(index))
-        delButton.clicked.connect(lambda index=index, text=text: self._onDeleteButtonClicked(index, text))
+        delButton.clicked.connect(lambda check, index=index, text=text: self._onDeleteButtonClicked(index, text))
 
         insert_position = 0
         for i, widget in enumerate(self.selectedWidgets):
@@ -454,7 +454,7 @@ class MSECComboBox(MSEComboBox):
     def _addDeleteButton(self, index, text):
         delButton = PushButton(FIF.CLOSE, text)
         delButton.setObjectName("DeleteButton_C_" + str(index))
-        delButton.clicked.connect(lambda index=index, text=text: self._onDeleteButtonClicked(index, text))
+        delButton.clicked.connect(lambda check, index=index, text=text: self._onDeleteButtonClicked(index, text))
 
         insert_position = 0
         for i, widget in enumerate(self.selectedWidgets):
