@@ -6,8 +6,6 @@ email: nbxlc@hotmail.com
 """
 
 
-
-from PySide6.QtCore import Qt
 from PySide6.QtDesigner import QDesignerCustomWidgetInterface
 
 from qfluentexpand.components.line.selector import FilePathSelector, FolderPathSelector
