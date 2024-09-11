@@ -10,7 +10,8 @@ from PySide6.QtDesigner import QDesignerCustomWidgetInterface
 
 # from qfluentwidgets import NavigationPanel, Pivot
 
-from qfluentexpand.components.navigation.navigation_interface import Navigation
+from qfluentexpand.components.navigation.navi_interface import Navigation
+from qfluentexpand.components.navigation.navigation_interface import NavigationInterface
 
 from base import PluginBase
 
@@ -38,6 +39,17 @@ class NaviInterfacePlugin(NavigationPlugin, QDesignerCustomWidgetInterface):
 
     def name(self):
         return "Navigation"
+
+
+class Navi_InterfacePlugin(NavigationPlugin, QDesignerCustomWidgetInterface):
+    """ Navigation interface plugin """
+
+    def createWidget(self, parent):
+        return NavigationInterface(parent, True, True)
+
+    def name(self):
+        return "Navigation_Interface"
+
 
 
 # class NavigationPanelPlugin(NavigationPlugin, QDesignerCustomWidgetInterface):
