@@ -28,7 +28,7 @@ class NavigationPlugin(PluginBase):
         """"
         package name
         """
-        return "qfluentexpand.components.navigation.navigation_interface"
+        return "qfluentexpand.components.navigation"
 
 
 class NaviInterfacePlugin(NavigationPlugin, QDesignerCustomWidgetInterface):
@@ -40,6 +40,12 @@ class NaviInterfacePlugin(NavigationPlugin, QDesignerCustomWidgetInterface):
     def name(self):
         return "Navigation"
 
+    def includeFile(self):
+        """"
+        package name
+        """
+        return "qfluentexpand.components.navigation.navi_interface"
+
 
 class Navi_InterfacePlugin(NavigationPlugin, QDesignerCustomWidgetInterface):
     """ Navigation interface plugin """
@@ -49,6 +55,12 @@ class Navi_InterfacePlugin(NavigationPlugin, QDesignerCustomWidgetInterface):
 
     def name(self):
         return "Navigation_Interface"
+
+    def includeFile(self):
+        """"
+        package name
+        """
+        return "qfluentexpand.components.navigation.navigation_interface"
 
 
 
