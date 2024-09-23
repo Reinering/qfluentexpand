@@ -33,13 +33,13 @@ class Line(LineEdit):
         super().__init__(parent=parent)
         # self.hBoxLayout.setAlignment(Qt.AlignLeft)
         self.setReadOnly(True)
-        spacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        spacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
         self.hBoxLayout.addItem(spacer)
 
-    def addWidget(self, widget: QWidget, stretch=0, alignment=Qt.AlignLeft, *args, **kwargs):
+    def addWidget(self, widget: QWidget, stretch=0, alignment=Qt.AlignmentFlag.AlignLeft, *args, **kwargs):
         self.hBoxLayout.addWidget(widget, stretch=stretch, alignment=alignment, *args, **kwargs)
 
-    def insertWidget(self, index: int, widget: QWidget, stretch=0, alignment=Qt.AlignLeft, *args, **kwargs):
+    def insertWidget(self, index: int, widget: QWidget, stretch=0, alignment=Qt.AlignmentFlag.AlignLeft, *args, **kwargs):
         self.hBoxLayout.insertWidget(index, widget, stretch=stretch, alignment=alignment, *args, **kwargs)
 
     def removeWidget(self, widget: QWidget):
