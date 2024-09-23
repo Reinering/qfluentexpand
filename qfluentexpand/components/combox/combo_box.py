@@ -42,7 +42,7 @@ class MSComboBox(Line, ComboBoxBase):
         self.dropButton = LineEditButton(FIF.ARROW_DOWN, self)
         self.dropButton.setFixedSize(30, 25)
         self.dropButton.clicked.connect(self._toggleComboMenu)
-        self.hBoxLayout.addWidget(self.dropButton, 0, Qt.AlignRight)
+        self.hBoxLayout.addWidget(self.dropButton, 0, Qt.AlignmentFlag.AlignRight)
 
         self.textChanged.connect(self._onComboTextChanged)
         self.returnPressed.connect(self._onReturnPressed)
@@ -81,13 +81,13 @@ class MSComboBox(Line, ComboBoxBase):
 
     def eventFilter(self, obj, e: QEvent):
         if obj is self:
-            if e.type() == QEvent.MouseButtonPress:
+            if e.type() == QEvent.Type.MouseButtonPress:
                 self.isPressed = True
-            elif e.type() == QEvent.MouseButtonRelease:
+            elif e.type() == QEvent.Type.MouseButtonRelease:
                 self.isPressed = False
-            elif e.type() == QEvent.Enter:
+            elif e.type() == QEvent.Type.Enter:
                 self.isHover = True
-            elif e.type() == QEvent.Leave:
+            elif e.type() == QEvent.Type.Leave:
                 self.isHover = False
 
         return super().eventFilter(obj, e)
@@ -250,7 +250,7 @@ class MSComboBox(Line, ComboBoxBase):
                 break
             insert_position = i + 1
 
-        self.hBoxLayout.insertWidget(insert_position, delButton, 0, Qt.AlignLeft)
+        self.hBoxLayout.insertWidget(insert_position, delButton, 0, Qt.AlignmentFlag.AlignLeft)
         self.selectedWidgets.insert(insert_position, delButton)
 
     def _removeDelButton(self, widget):
@@ -307,7 +307,7 @@ class MSEComboBox(Line, ComboBoxBase):
         self.dropButton = LineEditButton(FIF.ARROW_DOWN, self)
         self.dropButton.setFixedSize(30, 25)
         self.dropButton.clicked.connect(self._toggleComboMenu)
-        self.hBoxLayout.addWidget(self.dropButton, 0, Qt.AlignRight)
+        self.hBoxLayout.addWidget(self.dropButton, 0, Qt.AlignmentFlag.AlignRight)
 
         self.textChanged.connect(self._onComboTextChanged)
         self.returnPressed.connect(self._onReturnPressed)
@@ -339,13 +339,13 @@ class MSEComboBox(Line, ComboBoxBase):
 
     def eventFilter(self, obj, e: QEvent):
         if obj is self:
-            if e.type() == QEvent.MouseButtonPress:
+            if e.type() == QEvent.Type.MouseButtonPress:
                 self.isPressed = True
-            elif e.type() == QEvent.MouseButtonRelease:
+            elif e.type() == QEvent.Type.MouseButtonRelease:
                 self.isPressed = False
-            elif e.type() == QEvent.Enter:
+            elif e.type() == QEvent.Type.Enter:
                 self.isHover = True
-            elif e.type() == QEvent.Leave:
+            elif e.type() == QEvent.Type.Leave:
                 self.isHover = False
 
         return super().eventFilter(obj, e)
@@ -521,7 +521,7 @@ class MSEComboBox(Line, ComboBoxBase):
                 break
             insert_position = i + 1
 
-        self.hBoxLayout.insertWidget(insert_position, delButton, 0, Qt.AlignLeft)
+        self.hBoxLayout.insertWidget(insert_position, delButton, 0, Qt.AlignmentFlag.AlignLeft)
         self.selectedWidgets.insert(insert_position, delButton)
 
     def _removeDelButton(self, widget):
@@ -737,7 +737,7 @@ class MSECComboBox(MSEComboBox):
                 break
             insert_position = i + 1
 
-        self.hBoxLayout.insertWidget(insert_position, delButton, 0, Qt.AlignLeft)
+        self.hBoxLayout.insertWidget(insert_position, delButton, 0, Qt.AlignmentFlag.AlignLeft)
         self.selectedWidgets.insert(insert_position, delButton)
 
     def _removeDelButton(self, widget):
