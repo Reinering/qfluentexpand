@@ -4,3 +4,7 @@
 author: Reiner
 email: nbxlc@hotmail.com
 """
+
+
+
+from ._rc import resource
