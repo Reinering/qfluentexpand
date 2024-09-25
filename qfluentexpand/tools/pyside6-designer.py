@@ -302,7 +302,8 @@ def main(*argv,  **kwargs):
 
             global ARGV
             ARGV = unknown_args
-            _extend_path_var('PYSIDE_DESIGNER_PLUGINS', args.plugin[0])
+            if args.plugin:
+                _extend_path_var('PYSIDE_DESIGNER_PLUGINS', args.plugin[0])
 
             designer()
 
