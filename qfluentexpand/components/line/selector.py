@@ -22,6 +22,7 @@ class FilePathSelector(LineEdit):
 
         self.dropButton = LineEditButton(FIF.RIGHT_ARROW, self)
         self.dropButton.setFixedSize(30, 25)
+        self.setTextMargins(0, 0, 35, 0) # right margin for dropButton
         self.dropButton.clicked.connect(self._toggleSelect)
         self.hBoxLayout.addWidget(self.dropButton, 0, Qt.AlignRight)
 
@@ -49,6 +50,7 @@ class FolderPathSelector(LineEdit):
 
         self.dropButton = LineEditButton(FIF.RIGHT_ARROW, self)
         self.dropButton.setFixedSize(30, 25)
+        self.setTextMargins(0, 0, 35, 0) # right margin for dropButton
         self.dropButton.clicked.connect(self._toggleSelect)
         self.hBoxLayout.addWidget(self.dropButton, 0, Qt.AlignRight)
 
