@@ -22,9 +22,9 @@ class FilePathSelector(LineEdit):
 
         self.dropButton = LineEditButton(FIF.RIGHT_ARROW, self)
         self.dropButton.setFixedSize(30, 25)
-        self.setTextMargins(0, 0, 35, 0) # right margin for dropButton
+        self.setTextMargins(0, 0, 25, 0)    # right margin for dropButton
         self.dropButton.clicked.connect(self._toggleSelect)
-        self.hBoxLayout.addWidget(self.dropButton, 0, Qt.AlignRight)
+        self.hBoxLayout.addWidget(self.dropButton, 0, Qt.AlignmentFlag.AlignRight)
 
     def setFileTypes(self, fileTypes):
         self.fileTypes = fileTypes
@@ -50,14 +50,14 @@ class FolderPathSelector(LineEdit):
 
         self.dropButton = LineEditButton(FIF.RIGHT_ARROW, self)
         self.dropButton.setFixedSize(30, 25)
-        self.setTextMargins(0, 0, 35, 0) # right margin for dropButton
+        self.setTextMargins(0, 0, 25, 0)    # right margin for dropButton
         self.dropButton.clicked.connect(self._toggleSelect)
-        self.hBoxLayout.addWidget(self.dropButton, 0, Qt.AlignRight)
+        self.hBoxLayout.addWidget(self.dropButton, 0, Qt.AlignmentFlag.AlignRight)
 
     def _toggleSelect(self):
         try:
             folderPath = QFileDialog.getExistingDirectory(self, u"选择目录", "/",
-                                                          QFileDialog.ShowDirsOnly)
+                                                          QFileDialog.Option.ShowDirsOnly)
             if not folderPath:
                 return
 
