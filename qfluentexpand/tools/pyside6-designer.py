@@ -79,7 +79,7 @@ def qt_tool_wrapper(qt_tool, args, libexec=False):
         print(out.decode("gbk"))
 
         count = time.time() - startTime
-        if count > 20:
+        if count > 10:
             sys.exit(proc.returncode)
 
 
