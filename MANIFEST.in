@@ -4,4 +4,4 @@ include LICENSE
 include qfluentexpand/*
 include qfluentexpand/tools/designer-pyside6.bat
 include qfluentexpand/tools/designer-pyside6.sh
-
+exclude public/*
