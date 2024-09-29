@@ -304,6 +304,9 @@ def main(*argv,  **kwargs):
             ARGV = unknown_args
             if args.plugin:
                 _extend_path_var('PYSIDE_DESIGNER_PLUGINS', args.plugin[0])
+            else:
+                pluginPath = pyside_dir / '..' / 'qfluentexpand' / 'plugins'
+                _extend_path_var('PYSIDE_DESIGNER_PLUGINS', str(pluginPath / 'expand') + ';' + str(pluginPath))
 
             designer()
 

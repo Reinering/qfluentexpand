@@ -18,6 +18,6 @@ cd ../../../..
 # ¿ªÆôQt debug
 export QT_DEBUG_PLUGINS=1
 
-export PYSIDE_DESIGNER_PLUGINS=${qfluentexpand}/plugins/qfluentexpand;${qfluentexpand}/plugins
+export PYSIDE_DESIGNER_PLUGINS=${qfluentexpand}/plugins/expand;${qfluentexpand}/plugins
 
-python ${qfluentexpand}/tools/pyside6-designer.py -p %PYSIDE_DESIGNER_PLUGINS% %1
+python ${qfluentexpand}/tools/designer.py -p %PYSIDE_DESIGNER_PLUGINS% %1

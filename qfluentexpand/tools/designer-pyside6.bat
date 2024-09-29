@@ -6,7 +6,7 @@ echo ----------------------------¿ªÆôdesigner----------------------------
 
 set qfluentexpand=Lib\site-packages\qfluentexpand
 
-cd %~dp0/../../../..
+cd /d %~dp0../../../..
 
 ::SET DISPLAY
 
@@ -18,6 +18,6 @@ cd %~dp0/../../../..
 :: ¿ªÆôQt debug
 SET QT_DEBUG_PLUGINS=1
 
-SET PYSIDE_DESIGNER_PLUGINS=%qfluentexpand%\plugins\qfluentexpand;%qfluentexpand%\plugins
+SET PYSIDE_DESIGNER_PLUGINS=%qfluentexpand%\plugins\expand;%qfluentexpand%\plugins
 
-python %qfluentexpand%\tools\pyside6-designer.py -p %PYSIDE_DESIGNER_PLUGINS% %1
+python %qfluentexpand%\tools\designer.py -p %PYSIDE_DESIGNER_PLUGINS% %1
