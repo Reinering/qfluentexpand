@@ -80,7 +80,14 @@ def qt_tool_wrapper(qt_tool, args, libexec=False):
 
         count = time.time() - startTime
         if count > 10:
-            sys.exit(proc.returncode)
+            proc.kill()
+            # sys.exit(proc.returncode)
+            break
+
+    if proc.returncode == 0:
+        return (True, f"{proc.stdout}")
+    else:
+        return (False, f"Error: {proc.stderr}")
 
 
 def pyside_script_wrapper(script_name):
@@ -201,7 +208,7 @@ def designer():
         if is_virtual_env():
             _extend_path_var("PATH", os.fspath(Path(sys._base_executable).parent), True)
 
-    qt_tool_wrapper(ui_tool_binary("designer"), ARGV)
+    return qt_tool_wrapper(ui_tool_binary("designer"), ARGV)
 
 
 def linguist():
@@ -308,7 +315,7 @@ def main(*argv,  **kwargs):
                 pluginPath = pyside_dir / '..' / 'qfluentexpand' / 'plugins'
                 _extend_path_var('PYSIDE_DESIGNER_PLUGINS', str(pluginPath / 'expand') + ';' + str(pluginPath))
 
-            designer()
+            return designer()
 
 
         except getopt.error as msg:
