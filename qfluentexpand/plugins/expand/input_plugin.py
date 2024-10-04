@@ -6,21 +6,22 @@ email: nbxlc@hotmail.com
 """
 
 
+from PySide6.QtDesigner import QDesignerCustomWidgetInterface
 from qfluentexpand.components.line.editor import LineEditor
 from base import PluginBase
 
 
 
-class Basic_InputPlugin(PluginBase):
+class InputPlugin(PluginBase):
 
     def icon(self):
         return super().icon('TextBox')
 
     def group(self):
-        return super().group() + ' (Basic Input)'
+        return super().group() + ' (Input)'
 
 
-class LineEditorPlugin(Basic_InputPlugin):
+class LineEditorPlugin(InputPlugin, QDesignerCustomWidgetInterface):
     """ Line editor plugin """
 
     def createWidget(self, parent):
