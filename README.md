@@ -4,6 +4,7 @@
 ## installation
 
 ```bash
+	pip install "PySide6-Fluent-Widgets[full]" -i https://pypi.org/simple/
     pip install git+https://github.com/Reinering/qfluentexpand.git@pyside6
 ```
 
