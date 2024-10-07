@@ -9,7 +9,7 @@ email: nbxlc@hotmail.com
 from typing import Union
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QIcon, Qt
-from PySide6.QtWidgets import QWidget, QHBoxLayout
+from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QScrollArea, QFrame
 
 from qfluentwidgets.common.icon import FluentIconBase
 from qfluentwidgets import (
@@ -18,7 +18,10 @@ from qfluentwidgets import (
     SettingCard,
     ComboBox
 )
+from qfluentwidgets.common.icon import FluentIcon as FIF
+from qfluentwidgets.components.settings.expand_setting_card import GroupSeparator, SpaceWidget
 
+from qfluentexpand.common.stylesheets import StyleSheet
 from qfluentexpand.components.line.selector import FilePathSelector
 
 
@@ -134,3 +137,55 @@ class FileSelectorSettingCard(SettingCard):
     def setFileTypes(self, fileTypes):
         self.selector.setFileTypes(fileTypes)
 
+
+class ExpandCard(QScrollArea):
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.scrollWidget = QFrame(self)
+        self.view = QFrame(self.scrollWidget)
+
+        self.scrollLayout = QVBoxLayout(self.scrollWidget)
+        self.viewLayout = QVBoxLayout(self.view)
+
+        self.__initWidget()
+
+    def __initWidget(self):
+        """ initialize widgets """
+        self.setWidget(self.scrollWidget)
+        self.setWidgetResizable(True)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+
+        # initialize layout
+        self.scrollLayout.setContentsMargins(0, 0, 0, 0)
+        self.scrollLayout.setSpacing(0)
+        self.scrollLayout.addWidget(self.view)
+
+        # initialize style sheet
+        self.view.setObjectName('view')
+        self.scrollWidget.setObjectName('scrollWidget')
+        StyleSheet.EXPAND_CARD.apply(self)
+
+    def wheelEvent(self, e):
+        pass
+
+    def resizeEvent(self, e):
+        self.scrollWidget.resize(self.width(), self.scrollWidget.height())
+
+        vh = self.viewLayout.sizeHint().height()
+        h = self.viewportMargins().top()
+        self.setFixedHeight(max(h + vh - self.verticalScrollBar().value(), h))
+
+    def setValue(self, value):
+        """ set the value of config item """
+        pass
+
+    def addWidget(self, widget: QWidget):
+        """ add widget to group """
+        # add separator
+        if self.viewLayout.count() >= 1:
+            self.viewLayout.addWidget(GroupSeparator(self.view))
+
+        widget.setParent(self.view)
+        self.viewLayout.addWidget(widget)
