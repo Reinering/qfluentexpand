@@ -11,7 +11,7 @@ from enum import Enum
 from qfluentwidgets import StyleSheetBase, Theme, isDarkTheme, qconfig
 
 
-class FluentGif(Enum):
+class APPGIF(Enum):
 
     LOADING = "loading"
     LOADINGV2 = "loadingv2"

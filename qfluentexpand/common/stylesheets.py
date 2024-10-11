@@ -11,7 +11,7 @@ from enum import Enum
 from qfluentwidgets import StyleSheetBase, Theme, isDarkTheme, qconfig
 
 
-class StyleSheet(StyleSheetBase, Enum):
+class STYLESHEET(StyleSheetBase, Enum):
     """ Style sheet  """
 
     EXPAND_CARD = "expand_card"
