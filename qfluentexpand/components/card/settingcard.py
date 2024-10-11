@@ -21,7 +21,7 @@ from qfluentwidgets import (
 from qfluentwidgets.common.icon import FluentIcon as FIF
 from qfluentwidgets.components.settings.expand_setting_card import GroupSeparator, SpaceWidget
 
-from qfluentexpand.common.stylesheets import StyleSheet
+from qfluentexpand.common.stylesheets import STYLESHEET
 from qfluentexpand.components.line.selector import FilePathSelector
 
 
@@ -165,7 +165,7 @@ class ExpandCard(QScrollArea):
         # initialize style sheet
         self.view.setObjectName('view')
         self.scrollWidget.setObjectName('scrollWidget')
-        StyleSheet.EXPAND_CARD.apply(self)
+        STYLESHEET.EXPAND_CARD.apply(self)
 
     def wheelEvent(self, e):
         pass
