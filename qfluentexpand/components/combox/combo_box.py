@@ -8,6 +8,7 @@ email: nbxlc@hotmail.com
 
 import sys
 from typing import Union, List, Iterable
+import copy
 
 from PySide6.QtCore import Qt, Signal, QRectF, QPoint, QObject, QEvent
 from PySide6.QtGui import QPainter, QCursor, QIcon, QAction, QFont
@@ -75,6 +76,15 @@ class MSComboBox(Line, ComboBoxBase):
             tmp.append(self.items[i].text)
         return tmp
 
+    def clearSelected(self):
+        tmp = copy.copy(self.selectedItems)
+        for i in tmp:
+            self.widgets[i].setChecked(False)
+
+        if not self.isReadOnly():
+            super().clear()
+            super().setPlaceholderText(self._placeholderText)
+
     def setPlaceholderText(self, text: str):
         self._placeholderText = text
         super().setPlaceholderText(text)
@@ -122,17 +132,15 @@ class MSComboBox(Line, ComboBoxBase):
     def clear(self):
         """ Clears the combobox, removing all items. """
 
+        tmp = copy.copy(self.selectedItems)
+        for i in tmp:
+            self.widgets[i].setChecked(False)
+
         self.items.clear()
-        self.selectedItems.clear()
         self.widgets.clear()
-
-        if self.isReadOnly():
-            for widget in self.selectedWidgets:
-                self.hBoxLayout.removeItem(widget)
-                widget.deleteLater()
-            self.selectedWidgets.clear()
-
-        super().setPlaceholderText(self._placeholderText)
+        if not self.isReadOnly():
+            super().clear()
+            super().setPlaceholderText(self._placeholderText)
 
     # 下拉按钮点击事件
     def _toggleComboMenu(self, event):
@@ -373,20 +381,27 @@ class MSEComboBox(Line, ComboBoxBase):
     def itemDatas(self):
         return [self.itemData(index) for index in self.selectedItems]
 
+    def clearSelected(self):
+        tmp = copy.copy(self.selectedItems)
+        for i in tmp:
+            self.widgets[i][0].setChecked(False)
+
+        if not self.isReadOnly():
+            super().clear()
+            super().setPlaceholderText(self._placeholderText)
+
     def clear(self):
         """ Clears the combobox, removing all items. """
 
+        tmp = copy.copy(self.selectedItems)
+        for i in tmp:
+            self.widgets[i][0].setChecked(False)
+
         self.items.clear()
-        self.selectedItems.clear()
         self.widgets.clear()
-
-        if self.isReadOnly():
-            for widget in self.selectedWidgets:
-                self.hBoxLayout.removeItem(widget)
-                widget.deleteLater()
-            self.selectedWidgets.clear()
-
-        super().setPlaceholderText(self._placeholderText)
+        if not self.isReadOnly():
+            super().clear()
+            super().setPlaceholderText(self._placeholderText)
 
     # 下拉按钮点击事件
     def _toggleComboMenu(self, event):
@@ -604,21 +619,6 @@ class MSECComboBox(MSEComboBox):
         for item in self.items:
             if item.text == key:
                 item.readOnly = enabled
-
-    def clear(self):
-        """ Clears the combobox, removing all items. """
-
-        self.items.clear()
-        self.selectedItems.clear()
-        self.widgets.clear()
-
-        if self.isReadOnly():
-            for widget in self.selectedWidgets:
-                self.hBoxLayout.removeItem(widget)
-                widget.deleteLater()
-            self.selectedWidgets.clear()
-
-        super().setPlaceholderText(self._placeholderText)
 
     # 生成下拉菜单显示，并绑定事件
     def _showComboMenu(self):
