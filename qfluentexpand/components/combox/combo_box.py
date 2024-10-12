@@ -26,10 +26,10 @@ from qfluentwidgets.common.icon import FluentIcon as FIF
 from qfluentwidgets.common.style_sheet import FluentStyleSheet
 from qfluentwidgets.components.widgets.combo_box import ComboBoxBase, ComboItem
 
-from .base import Line
+from .base import Line, CustomLine
 
 
-class MSComboBox(Line, ComboBoxBase):
+class MSComboBox(CustomLine, ComboBoxBase):
     """ Multi Selection combo box """
 
     currentIndexChanged = Signal(int)
@@ -84,6 +84,15 @@ class MSComboBox(Line, ComboBoxBase):
         if not self.isReadOnly():
             super().clear()
             super().setPlaceholderText(self._placeholderText)
+
+    def _toggleDrop(self):
+        self.clearSelected()
+
+    def _showDrop(self, text):
+        if len(self.selectedItems) > 0 or self.text():
+            self.dropButton.show()
+        elif len(self.selectedItems) == 0 and not self.text():
+            self.dropButton.hide()
 
     def setPlaceholderText(self, text: str):
         self._placeholderText = text
@@ -242,6 +251,11 @@ class MSComboBox(Line, ComboBoxBase):
                 if len(self.selectedItems) == 0:
                     super().setPlaceholderText(self._placeholderText)
 
+        if len(self.selectedItems) > 0 or self.text():
+            self.dropButton.show()
+        elif len(self.selectedItems) == 0 and not self.text():
+            self.dropButton.hide()
+
     def _addDeleteButton(self, index, text):
         delButton = PushButton(FIF.CLOSE, text)
         delButton.setObjectName("DeleteButton_C_" + str(index))
@@ -297,7 +311,7 @@ class MSComboBox(Line, ComboBoxBase):
             LineEdit.clear(self)
 
 
-class MSEComboBox(Line, ComboBoxBase):
+class MSEComboBox(CustomLine, ComboBoxBase):
     """ Multi Selection Editable combo box """
 
     currentIndexChanged = Signal(int)
@@ -380,6 +394,15 @@ class MSEComboBox(Line, ComboBoxBase):
 
     def itemDatas(self):
         return [self.itemData(index) for index in self.selectedItems]
+
+    def _toggleDrop(self):
+        self.clearSelected()
+
+    def _showDrop(self, text):
+        if len(self.selectedItems) > 0 or self.text():
+            self.dropButton.show()
+        elif len(self.selectedItems) == 0 and not self.text():
+            self.dropButton.hide()
 
     def clearSelected(self):
         tmp = copy.copy(self.selectedItems)
@@ -519,6 +542,11 @@ class MSEComboBox(Line, ComboBoxBase):
                     self._removeDelButton(delButton)
                 if len(self.selectedItems) == 0:
                     super().setPlaceholderText(self._placeholderText)
+
+        if len(self.selectedItems) > 0 or self.text():
+            self.dropButton.show()
+        elif len(self.selectedItems) == 0 and not self.text():
+            self.dropButton.hide()
 
     def _addDeleteButton(self, index, text):
         delButton = PushButton(FIF.CLOSE, text)

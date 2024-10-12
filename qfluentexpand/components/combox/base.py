@@ -24,6 +24,8 @@ from qfluentwidgets.common.font import setFont
 from qfluentwidgets.common.style_sheet import FluentStyleSheet, themeColor
 from qfluentwidgets.common.overload import singledispatchmethod
 
+from qfluentexpand.components.line.editor import LineEditor
+
 
 
 class Line(LineEdit):
@@ -31,7 +33,6 @@ class Line(LineEdit):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        # self.hBoxLayout.setAlignment(Qt.AlignLeft)
         self.setReadOnly(True)
         spacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
         self.hBoxLayout.addItem(spacer)
@@ -44,6 +45,28 @@ class Line(LineEdit):
 
     def removeWidget(self, widget: QWidget):
         self.hBoxLayout.removeWidget(widget)
+
+
+class CustomLine(LineEditor):
+    """ Line edit """
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.setReadOnly(True)
+        spacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.hBoxLayout.insertItem(0, spacer)
+
+    def addWidget(self, widget: QWidget, stretch=0, alignment=Qt.AlignmentFlag.AlignLeft, *args, **kwargs):
+        self.hBoxLayout.addWidget(widget, stretch=stretch, alignment=alignment, *args, **kwargs)
+
+    def insertWidget(self, index: int, widget: QWidget, stretch=0, alignment=Qt.AlignmentFlag.AlignLeft, *args, **kwargs):
+        self.hBoxLayout.insertWidget(index, widget, stretch=stretch, alignment=alignment, *args, **kwargs)
+
+    def removeWidget(self, widget: QWidget):
+        self.hBoxLayout.removeWidget(widget)
+
+    def _toggleDrop(self):
+        pass
 
 
 class Action(QWidgetAction):
