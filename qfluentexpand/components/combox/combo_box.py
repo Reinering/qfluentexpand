@@ -40,10 +40,10 @@ class MSComboBox(Line, ComboBoxBase):
         self._setUpUi()
         self.setTextMargins(0, 0, 29, 0)
 
-        self.dropButton = LineEditButton(FIF.ARROW_DOWN, self)
-        self.dropButton.setFixedSize(30, 25)
-        self.dropButton.clicked.connect(self._toggleComboMenu)
-        self.hBoxLayout.addWidget(self.dropButton, 0, Qt.AlignmentFlag.AlignRight)
+        self.expandButton = LineEditButton(FIF.ARROW_DOWN, self)
+        self.expandButton.setFixedSize(30, 25)
+        self.expandButton.clicked.connect(self._toggleComboMenu)
+        self.hBoxLayout.addWidget(self.expandButton, 0, Qt.AlignmentFlag.AlignRight)
 
         self.textChanged.connect(self._onComboTextChanged)
         self.returnPressed.connect(self._onReturnPressed)
@@ -308,10 +308,10 @@ class MSEComboBox(Line, ComboBoxBase):
         self._setUpUi()
         self.setTextMargins(0, 0, 29, 0)
 
-        self.dropButton = LineEditButton(FIF.ARROW_DOWN, self)
-        self.dropButton.setFixedSize(30, 25)
-        self.dropButton.clicked.connect(self._toggleComboMenu)
-        self.hBoxLayout.addWidget(self.dropButton, 0, Qt.AlignmentFlag.AlignRight)
+        self.expandButton = LineEditButton(FIF.ARROW_DOWN, self)
+        self.expandButton.setFixedSize(30, 25)
+        self.expandButton.clicked.connect(self._toggleComboMenu)
+        self.hBoxLayout.addWidget(self.expandButton, 0, Qt.AlignmentFlag.AlignRight)
 
         self.textChanged.connect(self._onComboTextChanged)
         self.returnPressed.connect(self._onReturnPressed)
