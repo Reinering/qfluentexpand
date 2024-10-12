@@ -220,16 +220,12 @@ class MSComboBox(Line, ComboBoxBase):
     def _onItemChecked(self, checked, index):
         checked = self.widgets[index].isChecked()
         if checked:
-            self.widgets[int(index)].setEnabled(True)
-
             self.selectedItems.append(index)
             if self.isReadOnly():
                 self._addDeleteButton(index, self.items[int(index)].text)
                 if len(self.selectedItems) == 1:
                     super().setPlaceholderText('')
         else:
-            self.widgets[int(index)].setEnabled(False)
-
             self.selectedItems.remove(index)
             if self.isReadOnly():
                 delButton = self.findChild(PushButton, "DeleteButton_C_" + str(index))
