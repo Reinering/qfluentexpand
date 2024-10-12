@@ -24,10 +24,18 @@ class LineEditor(LineEdit):
         self.dropButton.setFixedSize(30, 25)
         self.setTextMargins(0, 0, 25, 0)  # right margin for dropButton
         self.dropButton.clicked.connect(self._toggleDrop)
+        self.dropButton.hide()
+        self.textChanged.connect(self._showDrop)
         self.hBoxLayout.addWidget(self.dropButton, 0, Qt.AlignmentFlag.AlignRight)
 
     def setText(self, arg__1: str) -> None:
         super().setText(arg__1)
+
+    def _showDrop(self, text):
+        if text:
+            self.dropButton.show()
+        else:
+            self.dropButton.hide()
 
     def _toggleDrop(self):
         self.clear()
