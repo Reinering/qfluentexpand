@@ -38,7 +38,7 @@ class MSComboBox(CustomLine, ComboBoxBase):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._setUpUi()
-        self.setTextMargins(0, 0, 29, 0)
+        self.setTextMargins(0, 0, 50, 0)
 
         self.expandButton = LineEditButton(FIF.ARROW_DOWN, self)
         self.expandButton.setFixedSize(30, 25)
@@ -320,7 +320,7 @@ class MSEComboBox(CustomLine, ComboBoxBase):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._setUpUi()
-        self.setTextMargins(0, 0, 29, 0)
+        self.setTextMargins(0, 0, 50, 0)
 
         self.expandButton = LineEditButton(FIF.ARROW_DOWN, self)
         self.expandButton.setFixedSize(30, 25)
