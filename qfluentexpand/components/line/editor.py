@@ -24,7 +24,7 @@ class Line(LineEdit):
         self.setReadOnly(True)
         self.setClearButtonEnabled(True)
         spacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-        self.hBoxLayout.addItem(spacer)
+        self.hBoxLayout.insertItem(0, spacer)
 
     def addWidget(self, widget: QWidget, stretch=0, alignment=Qt.AlignmentFlag.AlignLeft, *args, **kwargs):
         self.hBoxLayout.addWidget(widget, stretch=stretch, alignment=alignment, *args, **kwargs)
