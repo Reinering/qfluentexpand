@@ -7,36 +7,32 @@ email: nbxlc@hotmail.com
 
 
 from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
+    QWidget, QSizePolicy, QSpacerItem
+)
 
 from qfluentwidgets.components.widgets.line_edit import LineEdit, LineEditButton
 from qfluentwidgets.common.icon import FluentIcon as FIF
 
 
 
-
-class LineEditor(LineEdit):
+class Line(LineEdit):
+    """ Line edit """
 
     def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setPlaceholderText("input text here...")
+        super().__init__(parent=parent)
+        self.setReadOnly(True)
+        self.setClearButtonEnabled(True)
+        spacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.hBoxLayout.addItem(spacer)
 
-        self.dropButton = LineEditButton(FIF.CLOSE, self)
-        self.dropButton.setFixedSize(30, 25)
-        self.setTextMargins(0, 0, 25, 0)  # right margin for dropButton
-        self.dropButton.clicked.connect(self._toggleDrop)
-        self.dropButton.hide()
-        self.textChanged.connect(self._showDrop)
-        self.hBoxLayout.addWidget(self.dropButton, 0, Qt.AlignmentFlag.AlignRight)
+    def addWidget(self, widget: QWidget, stretch=0, alignment=Qt.AlignmentFlag.AlignLeft, *args, **kwargs):
+        self.hBoxLayout.addWidget(widget, stretch=stretch, alignment=alignment, *args, **kwargs)
 
-    def setText(self, arg__1: str) -> None:
-        super().setText(arg__1)
+    def insertWidget(self, index: int, widget: QWidget, stretch=0, alignment=Qt.AlignmentFlag.AlignLeft, *args, **kwargs):
+        self.hBoxLayout.insertWidget(index, widget, stretch=stretch, alignment=alignment, *args, **kwargs)
 
-    def _showDrop(self, text):
-        if text:
-            self.dropButton.show()
-        else:
-            self.dropButton.hide()
+    def removeWidget(self, widget: QWidget):
+        self.hBoxLayout.removeWidget(widget)
 
-    def _toggleDrop(self):
-        self.clear()
 
