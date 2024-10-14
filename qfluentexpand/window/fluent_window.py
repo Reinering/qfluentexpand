@@ -36,6 +36,7 @@ class FluentWindow(FluentWindowBase):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setTitleBar(FluentTitleBar(self))
+        self.interfaceKeys = {}
 
         self.navigationInterface = NavigationInterface(self, showReturnButton=True)
         self.widgetLayout = QHBoxLayout()
@@ -83,6 +84,7 @@ class FluentWindow(FluentWindowBase):
 
         interface.setProperty("isStackedTransparent", isTransparent)
         self.stackedWidget.addWidget(interface)
+        self.interfaceKeys[text] = interface
 
         # add navigation item
         routeKey = interface.objectName()
@@ -105,6 +107,11 @@ class FluentWindow(FluentWindowBase):
         self._updateStackedBackground()
 
         return item
+
+    def forward(self, text: str):
+        """ switch to the interface by text """
+        if self.interfaceKeys.get(text):
+            self.switchTo(self.interfaceKeys[text])
 
     def resizeEvent(self, e):
         self.titleBar.move(46, 0)
