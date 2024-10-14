@@ -26,10 +26,10 @@ from qfluentwidgets.common.icon import FluentIcon as FIF
 from qfluentwidgets.common.style_sheet import FluentStyleSheet
 from qfluentwidgets.components.widgets.combo_box import ComboBoxBase, ComboItem
 
-from .base import Line, CustomLine
+from qfluentexpand.components.line.editor import Line
 
 
-class MSComboBox(CustomLine, ComboBoxBase):
+class MSComboBox(Line, ComboBoxBase):
     """ Multi Selection combo box """
 
     currentIndexChanged = Signal(int)
@@ -50,7 +50,7 @@ class MSComboBox(CustomLine, ComboBoxBase):
         FluentStyleSheet.LINE_EDIT.apply(self)
 
         self.clearButton.clicked.disconnect()
-        self.clearButton.clicked.connect(self._onClearButtonClicked)
+        self.clearButton.clicked.connect(self._toggleDrop)
 
         self.items = []
         #
@@ -90,9 +90,9 @@ class MSComboBox(CustomLine, ComboBoxBase):
 
     def _showDrop(self, text):
         if len(self.selectedItems) > 0 or self.text():
-            self.dropButton.show()
+            self.clearButton.show()
         elif len(self.selectedItems) == 0 and not self.text():
-            self.dropButton.hide()
+            self.clearButton.hide()
 
     def setPlaceholderText(self, text: str):
         self._placeholderText = text
@@ -252,9 +252,9 @@ class MSComboBox(CustomLine, ComboBoxBase):
                     super().setPlaceholderText(self._placeholderText)
 
         if len(self.selectedItems) > 0 or self.text():
-            self.dropButton.show()
+            self.clearButton.show()
         elif len(self.selectedItems) == 0 and not self.text():
-            self.dropButton.hide()
+            self.clearButton.hide()
 
     def _addDeleteButton(self, index, text):
         delButton = PushButton(FIF.CLOSE, text)
@@ -304,14 +304,8 @@ class MSComboBox(CustomLine, ComboBoxBase):
 
         self.currentTextChanged.emit(text)
 
-    def _onClearButtonClicked(self):
-        if self.isReadOnly():
-            self.clear()
-        else:
-            LineEdit.clear(self)
 
-
-class MSEComboBox(CustomLine, ComboBoxBase):
+class MSEComboBox(Line, ComboBoxBase):
     """ Multi Selection Editable combo box """
 
     currentIndexChanged = Signal(int)
@@ -332,7 +326,7 @@ class MSEComboBox(CustomLine, ComboBoxBase):
         FluentStyleSheet.LINE_EDIT.apply(self)
 
         self.clearButton.clicked.disconnect()
-        self.clearButton.clicked.connect(self._onClearButtonClicked)
+        self.clearButton.clicked.connect(self._toggleDrop)
 
         self.items = []
         #
@@ -400,9 +394,9 @@ class MSEComboBox(CustomLine, ComboBoxBase):
 
     def _showDrop(self, text):
         if len(self.selectedItems) > 0 or self.text():
-            self.dropButton.show()
+            self.clearButton.show()
         elif len(self.selectedItems) == 0 and not self.text():
-            self.dropButton.hide()
+            self.clearButton.hide()
 
     def clearSelected(self):
         tmp = copy.copy(self.selectedItems)
@@ -544,9 +538,9 @@ class MSEComboBox(CustomLine, ComboBoxBase):
                     super().setPlaceholderText(self._placeholderText)
 
         if len(self.selectedItems) > 0 or self.text():
-            self.dropButton.show()
+            self.clearButton.show()
         elif len(self.selectedItems) == 0 and not self.text():
-            self.dropButton.hide()
+            self.clearButton.hide()
 
     def _addDeleteButton(self, index, text):
         delButton = PushButton(FIF.CLOSE, text)
@@ -595,12 +589,6 @@ class MSEComboBox(CustomLine, ComboBoxBase):
             return
 
         self.currentTextChanged.emit(text)
-
-    def _onClearButtonClicked(self):
-        if self.isReadOnly():
-            self.clear()
-        else:
-            LineEdit.clear(self)
 
 
 class MSECComboBox(MSEComboBox):

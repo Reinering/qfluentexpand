@@ -18,8 +18,8 @@ class FilePathSelector(LineEdit):
         super().__init__(parent)
         self.setPlaceholderText("Select a file path")
         self.setReadOnly(True)
+        self.setClearButtonEnabled(True)
         self.fileTypes = "*"
-        self.state = False
 
         self.dropButton = LineEditButton(FIF.RIGHT_ARROW, self)
         self.dropButton.setFixedSize(30, 25)
@@ -30,34 +30,16 @@ class FilePathSelector(LineEdit):
     def setFileTypes(self, fileTypes):
         self.fileTypes = fileTypes
 
-    def setText(self, arg__1: str) -> None:
-        super().setText(arg__1)
-        if arg__1:
-            self.state = True
-            self.dropButton._icon = FIF.CLOSE
-        else:
-            self.state = False
-            self.dropButton._icon = FIF.RIGHT_ARROW
-
     def _toggleSelect(self):
-        if self.state:
-            self.clear()
-            self.state = False
-            self.dropButton._icon = FIF.RIGHT_ARROW
-        else:
-            try:
-                filePath = QFileDialog.getOpenFileName(self, u"选择文件", "/",
-                                                       self.fileTypes)
-                if not filePath[0]:
-                    return
+        try:
+            filePath = QFileDialog.getOpenFileName(self, u"选择文件", "/",
+                                                   self.fileTypes)
+            if not filePath[0]:
+                return
 
-                self.setText(filePath[0])
-            except Exception as e:
-                print(e)
-
-            self.state = True
-            self.dropButton._icon = FIF.CLOSE
-
+            self.setText(filePath[0])
+        except Exception as e:
+            print(e)
 
 
 class FolderPathSelector(LineEdit):
@@ -66,7 +48,8 @@ class FolderPathSelector(LineEdit):
         super().__init__(parent)
         self.setPlaceholderText("Select a file folder")
         self.setReadOnly(True)
-        self.state = False
+        self.setClearButtonEnabled(True)
+        # self.state = False
 
         self.dropButton = LineEditButton(FIF.RIGHT_ARROW, self)
         self.dropButton.setFixedSize(30, 25)
@@ -74,31 +57,15 @@ class FolderPathSelector(LineEdit):
         self.dropButton.clicked.connect(self._toggleSelect)
         self.hBoxLayout.addWidget(self.dropButton, 0, Qt.AlignmentFlag.AlignRight)
 
-    def setText(self, arg__1: str) -> None:
-        super().setText(arg__1)
-        if arg__1:
-            self.state = True
-            self.dropButton._icon = FIF.CLOSE
-        else:
-            self.state = False
-            self.dropButton._icon = FIF.RIGHT_ARROW
-
     def _toggleSelect(self):
-        if self.state:
-            self.clear()
-            self.state = False
-            self.dropButton._icon = FIF.RIGHT_ARROW
-        else:
-            try:
-                folderPath = QFileDialog.getExistingDirectory(self, u"选择目录", "/",
-                                                              QFileDialog.Option.ShowDirsOnly)
-                if not folderPath:
-                    return
+        try:
+            folderPath = QFileDialog.getExistingDirectory(self, u"选择目录", "/",
+                                                          QFileDialog.Option.ShowDirsOnly)
+            if not folderPath:
+                return
 
-                self.setText(folderPath)
-            except Exception as e:
-                print(e)
+            self.setText(folderPath)
+        except Exception as e:
+            print(e)
 
-            self.state = True
-            self.dropButton._icon = FIF.CLOSE
 
