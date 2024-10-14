@@ -16,7 +16,7 @@ from pathlib import Path
 from setuptools import setup, find_packages
 
 # 读取项目的readme介绍
-with open("qfluentexpand/README.md", "r") as fh:
+with open("qfluentexpand/README.md", "r", encoding="gbk") as fh:
   long_description = fh.read()
 
 
