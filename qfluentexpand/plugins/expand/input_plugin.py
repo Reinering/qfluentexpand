@@ -7,7 +7,7 @@ email: nbxlc@hotmail.com
 
 
 from PySide6.QtDesigner import QDesignerCustomWidgetInterface
-from qfluentexpand.components.line.editor import LineEditor
+from qfluentexpand.components.line.editor import Line
 from base import PluginBase
 
 
@@ -25,10 +25,10 @@ class LineEditorPlugin(InputPlugin, QDesignerCustomWidgetInterface):
     """ Line editor plugin """
 
     def createWidget(self, parent):
-        return LineEditor(parent)
+        return Line(parent)
 
     def name(self):
-        return "LineEditor"
+        return "Line"
 
     def includeFile(self):
         """"
