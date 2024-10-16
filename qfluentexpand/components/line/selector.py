@@ -94,7 +94,7 @@ class FolderPathSelector(LineEdit):
         self.clearButton.clicked.connect(self._toggleSelect)
 
         self.textChanged.disconnect()
-        self.textChanged.connect(self.__onTextChanged)
+        self.textChanged.connect(self._onTextChanged)
 
     def setText(self, arg__1: str) -> None:
         super().setText(arg__1)
@@ -113,7 +113,7 @@ class FolderPathSelector(LineEdit):
         super().focusInEvent(e)
         self.clearButton.show()
 
-    def __onTextChanged(self, text):
+    def _onTextChanged(self, text):
         if text:
             self.state = True
             self.clearButton._icon = FIF.CLOSE
@@ -139,5 +139,4 @@ class FolderPathSelector(LineEdit):
 
             self.state = True
             self.clearButton._icon = FIF.CLOSE
-
 
