@@ -333,8 +333,14 @@ class ComboBoxSettingCardWidget(SettingCardWidget):
     def getCurrentIndex(self):
         return self.comboBox.currentIndex()
 
+    def setCurrentIndex(self, index):
+        self.comboBox.setCurrentIndex(index)
+
     def getCurrentText(self):
         return self.comboBox.currentText()
+
+    def setCurrentText(self, text):
+        self.comboBox.setCurrentText(text)
 
     def on_comboBox_currentIndexChanged(self, index):
         self.indexChanged.emit(index)
@@ -432,15 +438,42 @@ class MSECComboBoxSettingCardWidget(SettingCardWidget):
 
 class FileSettingCardWidget(SettingCardWidget):
 
+    textChanged = Signal(str)
+
     def __init__(self, icon: Union[str, QIcon, FluentIconBase], title, content=None, parent=None):
         super().__init__(icon, title, content, parent)
         self.selector = FilePathSelector(self)
+        self.selector.textChanged.connect(self.on_selector_textChanged)
         self.addWidget(self.selector)
+
+    def setFileTypes(self, fileTypes):
+        self.selector.setFileTypes(fileTypes)
+
+    def text(self):
+        return self.selector.text()
+
+    def setText(self, text):
+        self.selector.setText(text)
+
+    def on_selector_textChanged(self, text):
+        self.textChanged.emit(text)
 
 
 class FolderSettingCardWidget(SettingCardWidget):
 
+    textChanged = Signal(str)
+
     def __init__(self, icon: Union[str, QIcon, FluentIconBase], title, content=None, parent=None):
         super().__init__(icon, title, content, parent)
         self.selector = FolderPathSelector(self)
+        self.selector.textChanged.connect(self.on_selector_textChanged)
         self.addWidget(self.selector)
+
+    def text(self):
+        return self.selector.text()
+
+    def setText(self, text):
+        self.selector.setText(text)
+
+    def on_selector_textChanged(self, text):
+        self.textChanged.emit(text)
