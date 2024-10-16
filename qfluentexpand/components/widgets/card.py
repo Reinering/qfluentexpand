@@ -317,8 +317,8 @@ class RangeSettingCardWidget(SettingCardWidget):
 class ComboBoxSettingCardWidget(SettingCardWidget):
     """ Setting card with ComboBox """
 
-    indexChanged = Signal(int)
-    textChanged = Signal(str)
+    currentIndexChanged = Signal(int)
+    currentTextChanged = Signal(str)
 
     def __init__(self, icon: Union[str, QIcon, FluentIconBase], title, content=None, parent=None):
         super().__init__(icon, title, content, parent)
@@ -327,33 +327,33 @@ class ComboBoxSettingCardWidget(SettingCardWidget):
         self.comboBox.currentIndexChanged.connect(self.on_comboBox_currentIndexChanged)
         self.addWidget(self.comboBox)
 
-    def setBoxItems(self, items):
+    def setItems(self, items):
         self.comboBox.addItems(items)
 
-    def getCurrentIndex(self):
+    def currentIndex(self):
         return self.comboBox.currentIndex()
 
     def setCurrentIndex(self, index):
         self.comboBox.setCurrentIndex(index)
 
-    def getCurrentText(self):
+    def currentText(self):
         return self.comboBox.currentText()
 
     def setCurrentText(self, text):
         self.comboBox.setCurrentText(text)
 
     def on_comboBox_currentIndexChanged(self, index):
-        self.indexChanged.emit(index)
+        self.currentIndexChanged.emit(index)
 
     def on_comboBox_currentTextChanged(self, text):
-        self.textChanged.emit(text)
+        self.currentTextChanged.emit(text)
 
 
 class MSComboBoxSettingCardWidget(SettingCardWidget):
     """ Setting card with MSComboBox """
 
-    indexChanged = Signal(int)
-    textChanged = Signal(str)
+    currentIndexChanged = Signal(int)
+    currentTextChanged = Signal(str)
 
     def __init__(self, icon: Union[str, QIcon, FluentIconBase], title, content=None, parent=None):
         super().__init__(icon, title, content, parent)
@@ -362,27 +362,30 @@ class MSComboBoxSettingCardWidget(SettingCardWidget):
         self.comboBox.currentIndexChanged.connect(self.on_comboBox_currentIndexChanged)
         self.addWidget(self.comboBox)
 
-    def setBoxItems(self, items):
+    def setItems(self, items):
         self.comboBox.addItems(items)
 
-    def getCurrentIndex(self):
+    def currentIndex(self):
         return self.comboBox.currentIndex()
 
-    def getCurrentText(self):
+    def setCurrentIndex(self, index):
+        self.comboBox.setCurrentIndex(index)
+
+    def currentText(self):
         return self.comboBox.currentText()
 
     def on_comboBox_currentIndexChanged(self, index):
-        self.indexChanged.emit(index)
+        self.currentIndexChanged.emit(index)
 
     def on_comboBox_currentTextChanged(self, text):
-        self.textChanged.emit(text)
+        self.currentTextChanged.emit(text)
 
 
 class MSEComboBoxSettingCardWidget(SettingCardWidget):
     """ Setting card with MSEComboBox """
 
-    indexChanged = Signal(int)
-    textChanged = Signal(str)
+    currentIndexChanged = Signal(int)
+    currentTextChanged = Signal(str)
 
     def __init__(self, icon: Union[str, QIcon, FluentIconBase], title, content=None, parent=None):
         super().__init__(icon, title, content, parent)
@@ -391,27 +394,30 @@ class MSEComboBoxSettingCardWidget(SettingCardWidget):
         self.comboBox.currentIndexChanged.connect(self.on_comboBox_currentIndexChanged)
         self.addWidget(self.comboBox)
 
-    def setBoxItems(self, items):
+    def setItems(self, items):
         self.comboBox.addItems(items)
 
-    def getCurrentIndex(self):
+    def currentIndex(self):
         return self.comboBox.currentIndex()
 
-    def getCurrentText(self):
+    def setCurrentIndex(self, index):
+        self.comboBox.setCurrentIndex(index)
+
+    def currentText(self):
         return self.comboBox.currentText()
 
     def on_comboBox_currentIndexChanged(self, index):
-        self.indexChanged.emit(index)
+        self.currentIndexChanged.emit(index)
 
     def on_comboBox_currentTextChanged(self, text):
-        self.textChanged.emit(text)
+        self.currentTextChanged.emit(text)
 
 
 class MSECComboBoxSettingCardWidget(SettingCardWidget):
     """ Setting card with MSECComboBox """
 
-    indexChanged = Signal(int)
-    textChanged = Signal(str)
+    currentIndexChanged = Signal(int)
+    currentTextChanged = Signal(str)
 
     def __init__(self, icon: Union[str, QIcon, FluentIconBase], title, content=None, parent=None):
         super().__init__(icon, title, content, parent)
@@ -420,20 +426,23 @@ class MSECComboBoxSettingCardWidget(SettingCardWidget):
         self.comboBox.currentIndexChanged.connect(self.on_comboBox_currentIndexChanged)
         self.addWidget(self.comboBox)
 
-    def setBoxItems(self, items):
+    def setItems(self, items):
         self.comboBox.addItems(items)
 
-    def getCurrentIndex(self):
+    def currentIndex(self):
         return self.comboBox.currentIndex()
 
-    def getCurrentText(self):
+    def setCurrentIndex(self, index):
+        self.comboBox.setCurrentIndex(index)
+
+    def currentText(self):
         return self.comboBox.currentText()
 
     def on_comboBox_currentIndexChanged(self, index):
-        self.indexChanged.emit(index)
+        self.currentIndexChanged.emit(index)
 
     def on_comboBox_currentTextChanged(self, text):
-        self.textChanged.emit(text)
+        self.currentTextChanged.emit(text)
 
 
 class FileSettingCardWidget(SettingCardWidget):
@@ -448,6 +457,9 @@ class FileSettingCardWidget(SettingCardWidget):
 
     def setFileTypes(self, fileTypes):
         self.selector.setFileTypes(fileTypes)
+
+    def setReadOnly(self, checked):
+        self.selector.setReadOnly(checked)
 
     def text(self):
         return self.selector.text()
@@ -468,6 +480,9 @@ class FolderSettingCardWidget(SettingCardWidget):
         self.selector = FolderPathSelector(self)
         self.selector.textChanged.connect(self.on_selector_textChanged)
         self.addWidget(self.selector)
+
+    def setReadOnly(self, checked):
+        self.selector.setReadOnly(checked)
 
     def text(self):
         return self.selector.text()
