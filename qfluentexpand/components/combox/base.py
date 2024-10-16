@@ -12,17 +12,15 @@ from typing import Union, List, Iterable
 from PySide6.QtCore import Qt, Signal, QRectF, QPoint, QObject, QEvent, QTimer
 from PySide6.QtGui import QPainter, QAction, QCursor, QIcon, QPainterPath
 from PySide6.QtWidgets import (
-    QWidget, QWidgetAction, QVBoxLayout, QHBoxLayout,
-    QSizePolicy, QSpacerItem
+    QWidget, QWidgetAction, QVBoxLayout, QHBoxLayout
 )
 
-from qfluentwidgets.components.widgets.line_edit import LineEdit
-from qfluentwidgets.common.animation import TranslateYAnimation
+from qfluentwidgets import MenuAnimationType, IndicatorMenuItemDelegate
 from qfluentwidgets.common.icon import FluentIconBase, isDarkTheme
 from qfluentwidgets.common.icon import FluentIcon as FIF, Icon
-from qfluentwidgets.common.font import setFont
-from qfluentwidgets.common.style_sheet import FluentStyleSheet, themeColor
 from qfluentwidgets.common.overload import singledispatchmethod
+
+from qfluentexpand.components.menu.menu import RoundMenu
 
 
 
@@ -61,3 +59,21 @@ class Action(QWidgetAction):
 
         super().setIcon(icon)
 
+
+class ComboBoxMenu(RoundMenu):
+    """ Combo box menu """
+
+    def __init__(self, parent=None):
+        super().__init__(title="", parent=parent)
+
+        self.view.setViewportMargins(0, 2, 0, 6)
+        self.view.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.view.setItemDelegate(IndicatorMenuItemDelegate())
+        self.view.setObjectName('comboListWidget')
+
+        self.setItemHeight(33)
+
+    def exec(self, pos, ani=True, aniType=MenuAnimationType.DROP_DOWN):
+        self.view.adjustSize(pos, aniType)
+        self.adjustSize()
+        return super().exec(pos, ani, aniType)

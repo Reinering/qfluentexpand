@@ -17,7 +17,7 @@ from PySide6.QtWidgets import (
 
 )
 
-from qfluentwidgets import CheckBox, MenuAnimationType, PushButton, EditableComboBox
+from qfluentwidgets import CheckBox, MenuAnimationType, PushButton, BodyLabel
 from qfluentwidgets.components.widgets.line_edit import LineEdit, LineEditButton, CompleterMenu
 from qfluentwidgets.common.animation import TranslateYAnimation
 from qfluentwidgets.common.font import setFont
@@ -26,7 +26,196 @@ from qfluentwidgets.common.icon import FluentIcon as FIF
 from qfluentwidgets.common.style_sheet import FluentStyleSheet
 from qfluentwidgets.components.widgets.combo_box import ComboBoxBase, ComboItem
 
+from qfluentexpand.components.combox.base import ComboBoxMenu
 from qfluentexpand.components.line.editor import Line
+
+
+class EditableComboBox(LineEdit, ComboBoxBase):
+    """ Editable combo box """
+
+    currentIndexChanged = Signal(int)
+    currentTextChanged = Signal(str)
+    activated = Signal(int)
+    textActivated = Signal(str)
+    itemDeleted = Signal(int)
+    textItemDeleted = Signal(str)
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self._setUpUi()
+
+        self.dropButton = LineEditButton(FIF.ARROW_DOWN, self)
+
+        self.dropButton.setFixedSize(30, 25)
+        self.hBoxLayout.addWidget(self.dropButton, 0, Qt.AlignmentFlag.AlignRight)
+
+        self.dropButton.clicked.connect(self._toggleComboMenu)
+        self.textChanged.connect(self._onComboTextChanged)
+        self.returnPressed.connect(self._onReturnPressed)
+
+        FluentStyleSheet.LINE_EDIT.apply(self)
+
+        self.clearButton.clicked.disconnect()
+        self.clearButton.clicked.connect(self._onClearButtonClicked)
+
+        self.widgets = []
+        self.rowSize = 1
+        self.menu = None
+
+    def setClearButtonEnabled(self, enable: bool):
+        self._isClearButtonEnabled = enable
+        self.setTextMargins(0, 0, 50*enable, 0)
+
+    def setCompleterMenu(self, menu):
+        super().setCompleterMenu(menu)
+        menu.activated.connect(self.__onActivated)
+
+    def __onActivated(self, text):
+        index = self.findText(text)
+        if index >= 0:
+            self.setCurrentIndex(index)
+
+    def currentText(self):
+        return self.text()
+
+    def setCurrentIndex(self, index: int):
+        if index >= self.count() or index == self.currentIndex():
+            return
+
+        if index < 0:
+            self._currentIndex = -1
+            self.setText("")
+            self.setPlaceholderText(self._placeholderText)
+        else:
+            self._currentIndex = index
+            self.setText(self.items[index].text)
+
+    def clear(self):
+        ComboBoxBase.clear(self)
+
+    def setPlaceholderText(self, text: str):
+        self._placeholderText = text
+        super().setPlaceholderText(text)
+
+    def _onReturnPressed(self):
+        if not self.text():
+            return
+
+        index = self.findText(self.text())
+        if index >= 0 and index != self.currentIndex():
+            self._currentIndex = index
+            self.currentIndexChanged.emit(index)
+        elif index == -1:
+            self.addItem(self.text())
+            self.setCurrentIndex(self.count() - 1)
+
+    def eventFilter(self, obj, e: QEvent):
+        if obj is self:
+            if e.type() == QEvent.MouseButtonPress:
+                self.isPressed = True
+            elif e.type() == QEvent.MouseButtonRelease:
+                self.isPressed = False
+            elif e.type() == QEvent.Enter:
+                self.isHover = True
+            elif e.type() == QEvent.Leave:
+                self.isHover = False
+
+        return super().eventFilter(obj, e)
+
+    def _onComboTextChanged(self, text: str):
+        self._currentIndex = -1
+        self.currentTextChanged.emit(text)
+
+        for i, item in enumerate(self.items):
+            if item.text == text:
+                self._currentIndex = i
+                self.currentIndexChanged.emit(i)
+                return
+
+    def _onDropMenuClosed(self):
+        self.dropMenu = None
+
+    def _onClearButtonClicked(self):
+        LineEdit.clear(self)
+        self._currentIndex = -1
+
+    def _createComboMenu(self):
+        return ComboBoxMenu(self)
+
+    def setRowSize(self, size: int):
+        if size > 0 and size <= len(self.items):
+            self.rowSize = size
+
+    # 生成下拉菜单显示，并绑定事件
+    def _showComboMenu(self):
+        if not self.items:
+            return
+
+        menu = self._createComboMenu()
+        self.widgets.clear()
+        for i, item in enumerate(self.items):
+            if i % self.rowSize == 0:
+                tmpWidget = QWidget(menu)
+                hBoxLayout = QHBoxLayout(tmpWidget)
+                hBoxLayout.setSpacing(1)
+                hBoxLayout.setContentsMargins(1, 1, 1, 1)
+
+            label = BodyLabel(menu)
+            label.setObjectName("Label_C_" + str(i))
+            hBoxLayout.addWidget(label)
+
+            if self.isClearButtonEnabled():
+                clearBtn = LineEditButton(FIF.CLOSE)
+                clearBtn.setFixedSize(29, 25)
+                clearBtn.setObjectName("ClearButton_C_" + str(i))
+                clearBtn.setStyleSheet("background-color: transparent; border: none; padding: 0; margin: 0;")
+                clearBtn.clicked.connect(lambda checked, index=i: self._onItemDelClicked(checked, index))
+                hBoxLayout.addWidget(clearBtn)
+
+            if item.text:
+                label.setText(item.text)
+
+            tmpWidget.resize(menu.width(), 45)
+            menu.addWidget(tmpWidget, onClick=lambda checked, index=i: self._onItemClicked(checked, index))
+
+            self.widgets.append(tmpWidget)
+
+        if menu.view.width() < self.width():
+            menu.view.setMinimumWidth(self.width())
+            menu.adjustSize()
+
+        menu.setMaxVisibleItems(self.maxVisibleItems())
+        menu.closedSignal.connect(self._onDropMenuClosed)
+        self.dropMenu = menu
+
+        x = -menu.width() // 2 + menu.layout().contentsMargins().left() + self.width() // 2
+        pd = self.mapToGlobal(QPoint(x, self.height()))
+        hd = menu.view.heightForAnimation(pd, MenuAnimationType.DROP_DOWN)
+
+        pu = self.mapToGlobal(QPoint(x, 0))
+        hu = menu.view.heightForAnimation(pu, MenuAnimationType.PULL_UP)
+
+        if hd >= hu:
+            menu.view.adjustSize(pd, MenuAnimationType.DROP_DOWN)
+            menu.exec(pd, aniType=MenuAnimationType.DROP_DOWN)
+        else:
+            menu.view.adjustSize(pu, MenuAnimationType.PULL_UP)
+            menu.exec(pu, aniType=MenuAnimationType.PULL_UP)
+
+
+        self.adjustSize()
+
+    def _onItemDelClicked(self, checked, index):
+        text = self.items[index].text
+
+        self.dropMenu.removeWidget(self.widgets[index])
+        self.removeItem(index)
+
+        self.itemDeleted.emit(index)
+        self.textItemDeleted.emit(text)
+
+    def _onItemClicked(self, checked, index):
+        self.setCurrentIndex(index)
 
 
 class MSComboBox(Line, ComboBoxBase):
