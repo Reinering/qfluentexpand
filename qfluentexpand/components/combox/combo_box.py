@@ -94,6 +94,20 @@ class MSComboBox(Line, ComboBoxBase):
         elif len(self.selectedItems) == 0 and not self.text():
             self.clearButton.hide()
 
+    def focusInEvent(self, e):
+        super().focusInEvent(e)
+        if self.text() or len(self.selectedItems) > 0:
+            self.clearButton.show()
+        else:
+            self.clearButton.hide()
+
+    def focusOutEvent(self, e):
+        super().focusOutEvent(e)
+        if self.text() or len(self.selectedItems) > 0:
+            self.clearButton.show()
+        else:
+            self.clearButton.hide()
+
     def setPlaceholderText(self, text: str):
         self._placeholderText = text
         super().setPlaceholderText(text)
@@ -396,6 +410,20 @@ class MSEComboBox(Line, ComboBoxBase):
         if len(self.selectedItems) > 0 or self.text():
             self.clearButton.show()
         elif len(self.selectedItems) == 0 and not self.text():
+            self.clearButton.hide()
+
+    def focusInEvent(self, e):
+        super().focusInEvent(e)
+        if self.text() or len(self.selectedItems) > 0:
+            self.clearButton.show()
+        else:
+            self.clearButton.hide()
+
+    def focusOutEvent(self, e):
+        super().focusOutEvent(e)
+        if self.text() or len(self.selectedItems) > 0:
+            self.clearButton.show()
+        else:
             self.clearButton.hide()
 
     def clearSelected(self):
