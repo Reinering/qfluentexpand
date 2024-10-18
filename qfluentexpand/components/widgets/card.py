@@ -327,7 +327,7 @@ class ComboBoxSettingCardWidget(SettingCardWidget):
         self.comboBox.currentIndexChanged.connect(self.on_comboBox_currentIndexChanged)
         self.addWidget(self.comboBox)
 
-    def setItems(self, items):
+    def addItems(self, items):
         self.comboBox.addItems(items)
 
     def currentIndex(self):
@@ -362,7 +362,7 @@ class MSComboBoxSettingCardWidget(SettingCardWidget):
         self.comboBox.currentIndexChanged.connect(self.on_comboBox_currentIndexChanged)
         self.addWidget(self.comboBox)
 
-    def setItems(self, items):
+    def addItems(self, items):
         self.comboBox.addItems(items)
 
     def currentIndex(self):
@@ -394,7 +394,7 @@ class MSEComboBoxSettingCardWidget(SettingCardWidget):
         self.comboBox.currentIndexChanged.connect(self.on_comboBox_currentIndexChanged)
         self.addWidget(self.comboBox)
 
-    def setItems(self, items):
+    def addItems(self, items):
         self.comboBox.addItems(items)
 
     def currentIndex(self):
@@ -426,7 +426,7 @@ class MSECComboBoxSettingCardWidget(SettingCardWidget):
         self.comboBox.currentIndexChanged.connect(self.on_comboBox_currentIndexChanged)
         self.addWidget(self.comboBox)
 
-    def setItems(self, items):
+    def addItems(self, items):
         self.comboBox.addItems(items)
 
     def currentIndex(self):
