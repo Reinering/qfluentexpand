@@ -23,13 +23,11 @@ class FilePathSelector(LineEdit):
         self.state = False
 
         self.clearButton._icon = FIF.RIGHT_ARROW
-        self.clearButton.show()
         self.clearButton.clicked.disconnect()
         self.clearButton.clicked.connect(self._toggleSelect)
 
         self.textChanged.disconnect()
-        self.textChanged.connect(self.__onTextChanged)
-
+        self.textChanged.connect(self._onTextChanged)
 
     def setFileTypes(self, fileTypes):
         self.fileTypes = fileTypes
@@ -43,15 +41,11 @@ class FilePathSelector(LineEdit):
             self.state = False
             self.clearButton._icon = FIF.RIGHT_ARROW
 
-    def focusOutEvent(self, e):
-        super().focusInEvent(e)
-        self.clearButton.show()
-
     def focusInEvent(self, e):
         super().focusInEvent(e)
-        self.clearButton.show()
+        self.clearButton.setVisible(True)
 
-    def __onTextChanged(self, text):
+    def _onTextChanged(self, text):
         if text:
             self.state = True
             self.clearButton._icon = FIF.CLOSE
@@ -59,11 +53,17 @@ class FilePathSelector(LineEdit):
             self.state = False
             self.clearButton._icon = FIF.RIGHT_ARROW
 
+        if self.isClearButtonEnabled():
+            self.clearButton.setVisible(bool(text) and self.hasFocus())
+
     def _toggleSelect(self):
         if self.state:
             self.clear()
             self.state = False
             self.clearButton._icon = FIF.RIGHT_ARROW
+
+            if self.isClearButtonEnabled():
+                self.clearButton.setVisible(self.hasFocus())
         else:
             try:
                 filePath = QFileDialog.getOpenFileName(self, u"选择文件", "/",
@@ -89,7 +89,6 @@ class FolderPathSelector(LineEdit):
         self.state = False
 
         self.clearButton._icon = FIF.RIGHT_ARROW
-        self.clearButton.show()
         self.clearButton.clicked.disconnect()
         self.clearButton.clicked.connect(self._toggleSelect)
 
@@ -105,13 +104,17 @@ class FolderPathSelector(LineEdit):
             self.state = False
             self.clearButton._icon = FIF.RIGHT_ARROW
 
-    def focusOutEvent(self, e):
-        super().focusInEvent(e)
-        self.clearButton.show()
-
     def focusInEvent(self, e):
         super().focusInEvent(e)
-        self.clearButton.show()
+        self.clearButton.setVisible(True)
+
+    # 重载 mousePressEvent 确保按钮的点击优先级
+    def mousePressEvent(self, event):
+        # 如果点击在 clearButton 上，则优先处理按钮的点击
+        if self.clearButton.underMouse():
+            self.clearButton.click()  # 模拟按钮的点击事件
+        else:
+            super().mousePressEvent(event)
 
     def _onTextChanged(self, text):
         if text:
@@ -121,11 +124,17 @@ class FolderPathSelector(LineEdit):
             self.state = False
             self.clearButton._icon = FIF.RIGHT_ARROW
 
+        if self.isClearButtonEnabled():
+            self.clearButton.setVisible(bool(text) and self.hasFocus())
+
     def _toggleSelect(self):
         if self.state:
             self.clear()
             self.state = False
             self.clearButton._icon = FIF.RIGHT_ARROW
+
+            if self.isClearButtonEnabled():
+                self.clearButton.setVisible(self.hasFocus())
         else:
             try:
                 folderPath = QFileDialog.getExistingDirectory(self, u"选择目录", "/",
@@ -139,4 +148,3 @@ class FolderPathSelector(LineEdit):
 
             self.state = True
             self.clearButton._icon = FIF.CLOSE
-
