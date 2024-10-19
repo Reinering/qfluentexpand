@@ -31,7 +31,7 @@ from qfluentexpand.components.line.editor import Line
 
 
 class EditableComboBox(LineEdit, ComboBoxBase):
-    """ Editable combo box """
+    """ Editable combo box with delete button"""
 
     currentIndexChanged = Signal(int)
     currentTextChanged = Signal(str)
@@ -111,13 +111,13 @@ class EditableComboBox(LineEdit, ComboBoxBase):
 
     def eventFilter(self, obj, e: QEvent):
         if obj is self:
-            if e.type() == QEvent.MouseButtonPress:
+            if e.type() == QEvent.Type.MouseButtonPress:
                 self.isPressed = True
-            elif e.type() == QEvent.MouseButtonRelease:
+            elif e.type() == QEvent.Type.MouseButtonRelease:
                 self.isPressed = False
-            elif e.type() == QEvent.Enter:
+            elif e.type() == QEvent.Type.Enter:
                 self.isHover = True
-            elif e.type() == QEvent.Leave:
+            elif e.type() == QEvent.Type.Leave:
                 self.isHover = False
 
         return super().eventFilter(obj, e)
