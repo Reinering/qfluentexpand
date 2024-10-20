@@ -145,11 +145,14 @@ class LabelSettingCardWidget(SettingCardWidget):
 class LineSettingCardWidget(SettingCardWidget):
     """ Setting card with CaptionLabel """
 
+    textChanged = Signal(str)
+
     def __init__(self, icon: Union[str, QIcon, FluentIconBase], title, content=None, parent=None):
         super().__init__(icon, title, content, parent)
         self.line = LineEdit(self)
         self.line.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.line.setReadOnly(True)
+        self.line.textChanged.connect(self._textChanged)
         self.addWidget(self.line)
 
     def setText(self, text):
@@ -157,6 +160,9 @@ class LineSettingCardWidget(SettingCardWidget):
 
     def getText(self):
         return self.line.text()
+
+    def _textChanged(self, text):
+        self.textChanged.emit(text)
 
 
 class PushSettingCardWidget(SettingCardWidget):
