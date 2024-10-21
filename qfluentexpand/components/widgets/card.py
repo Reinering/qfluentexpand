@@ -138,7 +138,7 @@ class LabelSettingCardWidget(SettingCardWidget):
     def setText(self, text):
         self.label.setText(text)
 
-    def getText(self):
+    def text(self):
         return self.label.text()
 
 
@@ -158,7 +158,7 @@ class LineSettingCardWidget(SettingCardWidget):
     def setText(self, text):
         self.line.setText(text)
 
-    def getText(self):
+    def text(self):
         return self.line.text()
 
     def _textChanged(self, text):
