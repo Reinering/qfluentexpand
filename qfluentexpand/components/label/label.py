@@ -28,8 +28,11 @@ class GifLabel1(QLabel):
 
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-    def setGif(self, gif_path):
-        self.movie_obj = QMovie(gif_path)
+    def setGif(self, gif: Union[QMovie, FluentGifBase, str]):
+        self.setScaledContents(True)
+        self.setProperty('hasGif', gif is not None)
+        self._gif = gif or QMovie()
+        self.movie_obj = self.gif()
         self.setMovie(self.movie_obj)
 
     def setState(self, state):
@@ -37,6 +40,9 @@ class GifLabel1(QLabel):
             self.movie_obj.start()
         else:
             self.movie_obj.stop()
+
+    def gif(self):
+        return toQMovie(self._gif)
 
     def paintEvent(self, event):
         # 重写动画的绘制事件，使用自带的会导致动画模糊有锯齿
