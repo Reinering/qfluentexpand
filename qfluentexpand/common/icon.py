@@ -11,9 +11,7 @@ from enum import Enum
 from qfluentwidgets import getIconColor, Theme, FluentIconBase, qconfig
 
 
-
 class APPICON(FluentIconBase, Enum):
-
 
     ALL_INBOX = "all_inbox"
     CONTENT_COPY = "content_copy"
@@ -37,3 +35,8 @@ class APPICON(FluentIconBase, Enum):
     def path(self, theme=Theme.AUTO):
         theme = qconfig.theme if theme == Theme.AUTO else theme
         return f':/qfluentexpand/images/icons/{theme.value.lower()}/{self.value}.svg'
+
+
+
+
+
