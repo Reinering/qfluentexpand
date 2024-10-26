@@ -8,11 +8,15 @@ email: nbxlc@hotmail.com
 
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QColor
+import PySide6 as ref_mod
 
 from enum import Enum
 from typing import Union
 import os
+import sys
 import asyncio
+import subprocess
+from pathlib import Path
 
 from qfluentwidgets import getIconColor, Theme, FluentIconBase, qconfig
 
@@ -34,7 +38,7 @@ class GoogleMaterialIconBase(FluentIconBase, ExtendableEnum):
 
     def path(self, theme=Theme.AUTO):
         theme = qconfig.theme if theme == Theme.AUTO else theme
-        return f":{self.prefix}/{self.servicesProvided}/{self.iconPath}/{self.value}_{getIconColor(theme)}_{self.size}.svg"
+        return f":{self.prefix}/{self.servicesProvided}/{self.iconPath}/{self.value}_{getIconColor(theme, reverse=True)}_{self.size}.svg"
 
 
 class IconFontBase():
@@ -49,8 +53,13 @@ class IconFontBase():
 
         self.root_path = './'
         self.qrcPath = os.path.join(self.root_path, 'resources', 'resource_qfe.qrc')
+        self.resourcePath = os.path.join(self.root_path, 'resource_qfe.py')
+
+        self.pyside_dir = Path(ref_mod.__file__).resolve().parent
 
     def init(self):
+        self.resource = Resource(self.resourcePath)
+
         if not os.path.exists(self.qrcPath):
             QRC.writeQRC(self.qrcPath, '', prefix=self.prefix)
         self.qrc = QrcParser(self.qrcPath)
@@ -60,23 +69,27 @@ class IconFontBase():
         self.size = size
 
     def setRootPath(self, path):
+        if not Path.is_dir(Path(path)):
+            print(f"Path '{path}' is not a directory", file=sys.stderr)
+            return
         self.root_path = path
+        self.qrcPath = os.path.join(self.root_path, 'resources', 'resource_qfe.qrc')
+        self.resourcePath = os.path.join(self.root_path, 'resource_qfe.py')
 
     def setQRCPath(self, path):
         self.qrcPath = path
 
     def setResourcePath(self, path):
         self.resourcePath = path
-        self.resource = Resource(self.resourcePath)
 
     def setPrefix(self, prefix):
         self.prefix = prefix
 
     def getFontPath(self):
-        return os.path.join(self.resourcePath, self.servicesProvided, self.fontPath)
+        return os.path.join(self.root_path, 'resources', self.servicesProvided, self.fontPath)
 
     def getIconPath(self):
-        return os.path.join(self.resourcePath, self.servicesProvided, self.iconPath)
+        return os.path.join(self.root_path, 'resources', self.servicesProvided, self.iconPath)
 
     def createFile(self, root_dir):
         tmp = os.path.join(root_dir, 'resources')
@@ -105,6 +118,21 @@ class IconFontBase():
             name = name.split('_')[0]
             self.extend(cls, name.upper(), name)
 
+    def rcc(self):
+        exe = os.path.join(self.pyside_dir, "rcc")
+        cmd = [
+            'pyside6-rcc',
+            '-g',
+            'python',
+            self.qrcPath,
+            '-o',
+            self.resourcePath
+        ]
+        returncode = subprocess.call(cmd)
+        if returncode != 0:
+            command = ' '.join(cmd)
+            print(f"'{command}' returned {returncode}", file=sys.stderr)
+
     def download(self):
         pass
 
@@ -119,7 +147,6 @@ class GoogleMaterialBase(IconFontBase):
         self.waitTime = 20
         self.timer = None
 
-
     def setAttr(self):
         super().setAttr(GoogleMaterialIconBase)
 
@@ -129,11 +156,14 @@ class GoogleMaterialBase(IconFontBase):
 
     def init(self):
         super().init()
-        self.resource.load()
-        self.setAttr()
+        if os.path.exists(self.resourcePath):
+            self.resource.load()
+            self.setAttr()
 
     def download(self, name: Union[str, list], theme=Theme.AUTO, color: QColor = None, size=24):
         theme = qconfig.theme if theme == Theme.AUTO else theme
+        color = getIconColor(theme, reverse=True)
+
         async def async_download():
             async def download_icons():
                 downloader = AsyncGoogleDownloader(os.path.join(self.root_path, 'resources', self.servicesProvided, self.iconPath))
@@ -153,18 +183,22 @@ class GoogleMaterialBase(IconFontBase):
                 results = await asyncio.gather(*tasks)
 
                 for result in results:
-                    (filepath, filename) = os.path.split(result.file_path)
-                    if not self.qrc.has_icon(os.path.join(self.servicesProvided, self.iconPath, filename), check_content=True):
-                        self.qrc.add_resource(os.path.join(self.servicesProvided, self.iconPath, filename), self.prefix)
-                        name1 = filename.split('_')[0]
-                    GoogleMaterialIconBase.add(name1.upper(), name1)
-
                     if result.success:
                         print(f"图标 {result.icon_name} 下载成功: {result.file_path}")
+                        name1 = name
+                        (filepath, filename) = os.path.split(result.file_path)
+                        if not self.qrc.has_icon(os.path.join(self.servicesProvided, self.iconPath, filename),
+                                                 check_content=True):
+                            self.qrc.add_resource(os.path.join(self.servicesProvided, self.iconPath, filename),
+                                                  self.prefix)
+                            name1 = filename.split('_')[0]
+                        GoogleMaterialIconBase.add(name1.upper(), name1)
                     else:
                         print(f"图标 {result.icon_name} 下载失败: {result.error}")
 
                 self.icons.clear()
+                self.rcc()
+                self.resource.load()
 
                 await downloader.close()
 
@@ -173,8 +207,8 @@ class GoogleMaterialBase(IconFontBase):
             await download_icons()
 
         if isinstance(name, str):
-            if not os.path.exists(os.path.join(self.root_path, 'resources', self.servicesProvided, self.iconPath, '_'.join((name, getIconColor(theme), str(size)))) + '.svg'):
-                self.icons.append((name, getIconColor(theme), size))
+            if not os.path.exists(os.path.join(self.root_path, 'resources', self.servicesProvided, self.iconPath, '_'.join((name, color, str(size)))) + '.svg'):
+                self.icons.append((name, color, size))
         elif isinstance(name, list):
             if not os.path.exists(
                     self.root_path, 'resources', os.path.join(self.servicesProvided, self.iconPath, '_'.join(name))):

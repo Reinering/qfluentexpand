@@ -6,6 +6,11 @@ email: nbxlc@hotmail.com
 """
 
 
+from PySide6.QtGui import QIcon
+import os
+
+from qfluentwidgets import getIconColor, Theme, qconfig
+
 from .base import GoogleMaterialIconBase
 from .manager import QFluentManager
 
@@ -13,14 +18,21 @@ from .manager import QFluentManager
 class QFluentIcon():
 
     @classmethod
-    def googleIcon(cls, name):
+    def googleIcon(cls, name, theme=Theme.AUTO):
         try:
             name = name.upper()
             GoogleMaterialIconBase.get(name)
-            return getattr(GoogleMaterialIconBase, name)
+
+            theme = qconfig.theme if theme == Theme.AUTO else theme
+            print("mark", os.path.join(QFluentManager.google.getIconPath(), f"{name.lower()}_{getIconColor(theme, reverse=True)}_{QFluentManager.google.size}.svg"))
+            print("mark", os.path.exists(os.path.join(QFluentManager.google.getIconPath(), f"{name.lower()}_{getIconColor(theme, reverse=True)}_{QFluentManager.google.size}.svg")))
+            if os.path.exists(os.path.join(QFluentManager.google.getIconPath(), f"{name.lower()}_{getIconColor(theme, reverse=True)}_{QFluentManager.google.size}.svg")):
+                return getattr(GoogleMaterialIconBase, name)
+            else:
+                QFluentManager.google.download(name.lower())
+                return QIcon()
         except AttributeError as e:
             print(e)
-            if QFluentManager.google.download(name.lower()):
-                return ''
-            else:
-                return ''
+            QFluentManager.google.download(name.lower())
+            return QIcon()
+
