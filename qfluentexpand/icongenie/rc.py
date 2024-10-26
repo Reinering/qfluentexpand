@@ -6,7 +6,7 @@ email: nbxlc@hotmail.com
 """
 
 
-from PyQt5.QtCore import QCoreApplication
+from PySide6.QtCore import QCoreApplication
 from PySide6.QtCore import Qt, QFileInfo, QDir, QResource
 import os
 import sys
