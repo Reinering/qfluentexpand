@@ -38,8 +38,8 @@
     
     # 
     material = QFluentManager.google    # google font icon manager
-    material.setRootPath(ROOT_PATH)     # 设置resource文件资源路径， 建议设置项目根目录 创建qrc文件名是固定的：resource_qfe.qrc
-    material.setResourcePath(os.path.join(ROOT_PATH, "resource_qfe_rc.py"))     # 设置qrc编译后的资源文件路径 比如 ./resource_qfe_rc.py
+    material.setRootPath('./')     # 设置resource文件资源路径， 建议设置项目根目录 创建qrc文件名是固定的：resource_qfe.qrc
+    material.setResourcePath(os.path.join(ROOT_PATH, "resource_qfe_rc.py"))     # 设置qrc编译后的资源文件路径 不设置时默认: ./resource_qfe_rc.py
     material.init()
     
     # UI文件中 引用icon
@@ -57,13 +57,15 @@ Setting icon 会自动加载 google font icon
 
 ![resource](/public/images/resource.png "resource") 
 
-2、下载到的资源，会自动写入qrc文件中，然后编译成py文件（暂时还需要手动编译）
+2、下载到的资源，会自动写入qrc文件中，然后自动编译成py文件
 
 ![qrc](/public/images/qrc.png "qrc") 
     
 2、编译后，然后重新运行程序，会自动加载到 GoogleMaterialIconBase 中，QFluentIcon.googleIcon("SETTING")调用也是从GoogleMaterialIconBase获取的
 
 ![ui](/public/images/ui.png "ui") 
+
+注意： resource_qfe_rc.py 不需要手动引入，模块会自动引入
 
 ### 其他属性设置
 ```
@@ -73,6 +75,8 @@ Setting icon 会自动加载 google font icon
     # icon color 是根据PyQt-Fluent-Widgets的theme设置的取得颜色hex值
 
 ```
+
+
 
 
 
