@@ -57,7 +57,7 @@ Setting icon 会自动加载 google font icon
 
 ![resource](/public/images/resource.png "resource") 
 
-2、下载到的资源，会自动写入qrc文件中，然后自动编译成py文件
+2、下载到的资源，会自动写入qrc文件中，然后自动编译成py文件 文件名：resource_qfe_rc.py
 
 ![qrc](/public/images/qrc.png "qrc") 
     
@@ -65,7 +65,10 @@ Setting icon 会自动加载 google font icon
 
 ![ui](/public/images/ui.png "ui") 
 
-注意： resource_qfe_rc.py 不需要手动引入，模块会自动引入
+注意： resource_qfe_rc.py 不需要手动引入，模块会自动引入。但打包时，需要注意打包工具配置: 
+
+    1、pyinstaller:  addData: ./resource_qfe_rc.py;./
+    2、nuitka:  include-data-files: ./resource_qfe_rc.py=./resource_qfe_rc.py
 
 ### 其他属性设置
 ```
