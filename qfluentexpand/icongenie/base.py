@@ -60,10 +60,12 @@ class IconFontBase():
     def init(self):
         self.resource = Resource(self.resourcePath)
 
-        if not os.path.exists(self.qrcPath):
-            QRC.writeQRC(self.qrcPath, '', prefix=self.prefix)
-        self.qrc = QrcParser(self.qrcPath)
-        self.createFile(self.root_path)
+        # 判断是否打包
+        if not getattr(sys, 'frozen', False) and not '__compiled__' in globals():
+            if not os.path.exists(self.qrcPath):
+                QRC.writeQRC(self.qrcPath, '', prefix=self.prefix)
+            self.qrc = QrcParser(self.qrcPath)
+            self.createFile(self.root_path)
 
     def setSize(self, size):
         self.size = size
@@ -74,7 +76,7 @@ class IconFontBase():
             return
         self.root_path = path
         self.qrcPath = os.path.join(self.root_path, 'resources', 'resource_qfe.qrc')
-        self.resourcePath = os.path.join(self.root_path, 'resource_qfe.py')
+        self.resourcePath = os.path.join(self.root_path, 'resource_qfe_rc.py')
 
     def setQRCPath(self, path):
         self.qrcPath = path
@@ -111,6 +113,7 @@ class IconFontBase():
 
     def setAttr(self, cls):
         prefix = ':' + os.path.join(self.prefix, self.servicesProvided, self.iconPath)
+
         images = self.resource.getImages(prefix)
         for img in images:
             (filepath, filename) = os.path.split(img)
