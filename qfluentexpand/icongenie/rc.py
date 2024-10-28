@@ -349,7 +349,7 @@ class QrcParser:
         file_elem.text = str(Path(file_path))  # Normalize path
         if alias:
             file_elem.set('alias', alias)
-        # file_elem.tail = '\n'
+        file_elem.tail = '\n'
 
         self._write_tree(tree)
         self._parse()
@@ -396,7 +396,7 @@ class QrcParser:
 
     def _write_tree(self, tree: ET.ElementTree):
         root = tree.getroot()
-        xml_str = ET.tostring(root, encoding='unicode').replace('</file>', '</file>\n')
+        xml_str = ET.tostring(root, encoding='unicode').replace('</file>', '</file>')
         with open(self.qrc_path, 'w', encoding='utf-8') as f:
             f.write(xml_str)
 

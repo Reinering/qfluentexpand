@@ -176,7 +176,7 @@ class IconFontBase():
 
         asyncio.run(async_rcc())
 
-    async def rcc(self):
+    def rcc(self):
         exe = os.path.join(self.pyside_dir, "rcc")
         cmd = [
             'pyside6-rcc',
@@ -212,7 +212,7 @@ class IconFontBase():
                     process.download(icon_name, color, size)
                     for icon_name, color, size in self.icons
                 ]
-                results = await asyncio.gather(*tasks)
+                results = await asyncio.gather(*tasks, return_exceptions=True)
 
                 for result in results:
                     if result.success:
@@ -229,25 +229,36 @@ class IconFontBase():
                         print(f"图标 {result.icon_name} 下载失败: {result.error}")
 
                 self.icons.clear()
-                self.resource.reload()
+                self.rcc()
+                # self.resource.reload()
+                # self.setAttr()
 
-                await self.rcc()
                 await process.close()
 
             await download_icons()
+
+        def _run_async(coro):
+            """安全地运行异步代码的辅助方法"""
+            try:
+                loop = asyncio.get_event_loop()
+            except RuntimeError:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+
+            return loop.run_until_complete(coro)
 
         if isinstance(name, str):
             if not os.path.exists(os.path.join(self.root_path, 'resources', self.servicesProvided, self.iconPath,
                                                '_'.join((name, color, str(size)))) + '.svg'):
                 self.icons.append((name, color, size))
         elif isinstance(name, list):
-            if not os.path.exists(
-                    self.root_path, 'resources', os.path.join(self.servicesProvided, self.iconPath, '_'.join(name))):
+            if not os.path.exists(os.path.join(
+                    self.root_path, 'resources', self.servicesProvided, self.iconPath, '_'.join(name))):
                 self.icons.append(name)
 
         if len(self.icons) == 1:
             self.timer = QTimer()
-            self.timer.singleShot(self.waitTime, lambda: asyncio.run(async_download()))
+            self.timer.singleShot(self.waitTime, lambda: _run_async(async_download()))
             self.timer.startTimer(self.waitTime)
 
 

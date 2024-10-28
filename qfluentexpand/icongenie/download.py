@@ -7,10 +7,9 @@ email: nbxlc@hotmail.com
 
 
 import os
-import threading
 import asyncio
 import aiohttp
-import requests
+import httpx
 from typing import Callable, Optional, Tuple, Dict
 from dataclasses import dataclass
 
@@ -169,6 +168,12 @@ class AsyncSimpleIconsDownloader(AsyncDownloader):
     Simple Icons异步下载器
     """
 
+    async def _get_session(self) -> aiohttp.ClientSession:
+        """获取或创建HTTP会话"""
+        if self._session is None:
+            self._session = aiohttp.ClientSession()
+        return self._session
+
     def _get_icon_url(self, icon_name: str, color_code: str) -> str:
         """生成图标下载URL"""
         return f"https://cdn.simpleicons.org/{icon_name}/{color_code}"
@@ -178,17 +183,7 @@ class AsyncSimpleIconsDownloader(AsyncDownloader):
                        color: str = "black",
                        size: int = 24
                        ) -> DownloadResult:
-        """
-        异步下载图标
 
-        Args:
-            icon_name: 图标名称
-            color: 图标颜色
-            size: 图标大小
-
-        Returns:
-            DownloadResult: 下载结果对象
-        """
         file_path = self._get_file_path(icon_name, color, size)
         task_key = f"{icon_name}_{color}_{size}"
 
@@ -196,36 +191,23 @@ class AsyncSimpleIconsDownloader(AsyncDownloader):
         if os.path.exists(file_path):
             return DownloadResult(True, file_path, icon_name=icon_name)
 
-        # 检查是否已有下载任务
-        if task_key in self._downloading:
-            await self._downloading[task_key].wait()
-            if os.path.exists(file_path):
-                return DownloadResult(True, file_path, icon_name=icon_name)
-
-        # 创建下载事件
-        download_event = asyncio.Event()
-        self._downloading[task_key] = download_event
-
+        url = self._get_icon_url(icon_name, color)
         try:
-            session = await self._get_session()
-            url = self._get_icon_url(icon_name, color)
-
-            async with session.get(url) as response:
-                if response.status == 200:
-                    content = await response.read()
+            async with httpx.AsyncClient() as client:
+                response = await client.get(url)
+                if response.status_code == 200:
+                    content = response.read()
                     with open(file_path, 'wb') as f:
                         f.write(content)
                     return DownloadResult(True, file_path, icon_name=icon_name)
                 else:
                     return DownloadResult(
                         False,
-                        error=f"HTTP错误: {response.status}",
+                        error=f"HTTP错误: {response.status_code}",
                         icon_name=icon_name
                     )
-
         except Exception as e:
             return DownloadResult(False, error=str(e), icon_name=icon_name)
 
-        finally:
-            download_event.set()
-            del self._downloading[task_key]
+
+

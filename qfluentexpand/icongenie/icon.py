@@ -50,7 +50,6 @@ class QFluentIcon():
             # 判断是否打包
             if not getattr(sys, 'frozen', False) and not '__compiled__' in globals():
                 theme = qconfig.theme if theme == Theme.AUTO else theme
-                print("iconIfy", getIconColor(theme, reverse=reverse))
                 if os.path.exists(os.path.join(QFluentManager.iconify.getIconPath(),
                                                f"{name.lower()}_{getIconColor(theme, reverse=reverse)}_{QFluentManager.iconify.size}.svg")):
                     return getattr(IconifyIconBase, name)
@@ -87,6 +86,6 @@ class QFluentIcon():
             print(e)
             # 判断是否打包
             if not getattr(sys, 'frozen', False) and not '__compiled__' in globals():
-                QFluentManager.google.download(name.lower())
+                QFluentManager.simpleicons.download(name.lower())
             return QIcon()
 
