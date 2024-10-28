@@ -24,7 +24,7 @@ class DownloadResult:
     icon_name: str = ""
 
 
-class AsyncGoogleDownloader:
+class AsyncDownloader:
     """
     Material Icons异步下载器
     """
@@ -40,6 +40,7 @@ class AsyncGoogleDownloader:
         self._create_save_dir()
         self._session: Optional[aiohttp.ClientSession] = None
         self._downloading: Dict[str, asyncio.Event] = {}
+        self._library = None
 
     def _create_save_dir(self) -> None:
         """创建保存目录"""
@@ -58,7 +59,10 @@ class AsyncGoogleDownloader:
 
     def _get_icon_url(self, icon_name: str) -> str:
         """生成图标下载URL"""
-        return f"https://api.iconify.design/material-symbols/{icon_name}.svg"
+        pass
+
+    def setLibrary(self, library: str):
+        self._library = library
 
     async def download(self,
                        icon_name: str,
@@ -97,7 +101,7 @@ class AsyncGoogleDownloader:
             session = await self._get_session()
             url = self._get_icon_url(icon_name)
             params = {"color": color, "size": size}
-
+            print("url:", url)
             async with session.get(url, params=params) as response:
                 if response.status == 200:
                     content = await response.read()
@@ -123,3 +127,105 @@ class AsyncGoogleDownloader:
         if self._session:
             await self._session.close()
             self._session = None
+
+
+class AsyncIconifyDownloader(AsyncDownloader):
+    """
+    Iconify异步下载器
+    """
+
+    def __init__(self, save_dir: str = "material_icons"):
+        """
+        初始化异步下载器
+
+        Args:
+            save_dir: 图标保存目录
+        """
+        super().__init__(save_dir)
+        self._library = "material-symbols"
+
+    def _get_icon_url(self, icon_name: str) -> str:
+        """生成图标下载URL
+            备用：
+            https://api.simplesvg.com
+            https://api.unisvg.com
+        """
+        return f"https://api.iconify.design/{self._library}/{icon_name}.svg"
+
+
+
+class AsyncGoogleDownloader(AsyncDownloader):
+    """
+    Material Icons异步下载器
+    """
+
+    def _get_icon_url(self, icon_name: str) -> str:
+        """生成图标下载URL"""
+        return f"https://api.iconify.design/material-symbols/{icon_name}.svg"
+
+
+class AsyncSimpleIconsDownloader(AsyncDownloader):
+    """
+    Simple Icons异步下载器
+    """
+
+    def _get_icon_url(self, icon_name: str, color_code: str) -> str:
+        """生成图标下载URL"""
+        return f"https://cdn.simpleicons.org/{icon_name}/{color_code}"
+
+    async def download(self,
+                       icon_name: str,
+                       color: str = "black",
+                       size: int = 24
+                       ) -> DownloadResult:
+        """
+        异步下载图标
+
+        Args:
+            icon_name: 图标名称
+            color: 图标颜色
+            size: 图标大小
+
+        Returns:
+            DownloadResult: 下载结果对象
+        """
+        file_path = self._get_file_path(icon_name, color, size)
+        task_key = f"{icon_name}_{color}_{size}"
+
+        # 检查文件是否已存在
+        if os.path.exists(file_path):
+            return DownloadResult(True, file_path, icon_name=icon_name)
+
+        # 检查是否已有下载任务
+        if task_key in self._downloading:
+            await self._downloading[task_key].wait()
+            if os.path.exists(file_path):
+                return DownloadResult(True, file_path, icon_name=icon_name)
+
+        # 创建下载事件
+        download_event = asyncio.Event()
+        self._downloading[task_key] = download_event
+
+        try:
+            session = await self._get_session()
+            url = self._get_icon_url(icon_name, color)
+
+            async with session.get(url) as response:
+                if response.status == 200:
+                    content = await response.read()
+                    with open(file_path, 'wb') as f:
+                        f.write(content)
+                    return DownloadResult(True, file_path, icon_name=icon_name)
+                else:
+                    return DownloadResult(
+                        False,
+                        error=f"HTTP错误: {response.status}",
+                        icon_name=icon_name
+                    )
+
+        except Exception as e:
+            return DownloadResult(False, error=str(e), icon_name=icon_name)
+
+        finally:
+            download_event.set()
+            del self._downloading[task_key]

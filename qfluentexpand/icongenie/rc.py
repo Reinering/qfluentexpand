@@ -64,6 +64,10 @@ class QRC:
 
 class Resource:
 
+    import_modules = {
+        # "resource": "resource"
+    }
+
     def __init__(self, file):
         self.file = file
         self.state = 0     # 0: not loaded, 1: loaded successfully, 2: failed to load, 3: empty file
@@ -72,14 +76,30 @@ class Resource:
         file = self.file
         if not os.path.exists(file):
             raise Exception(f"File does not exist: {file}")
+
+        self.module_name = os.path.basename(file).replace(".py", "")
+
+        if self.import_modules.get(self.module_name):
+            self.state = 1
+            print("Resource file already imported")
+            return
+
+        import importlib.util
+        spec = importlib.util.find_spec("resource")
+        if spec is not None:
+            self.state = 1
+            print("Resource file already imported")
+            return
+
         try:
-            spec = importlib.util.spec_from_file_location("resource", file)
-            resource = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(resource)
-            sys.modules["resource"] = resource
+            spec = importlib.util.spec_from_file_location(self.module_name, file)
+            custom_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(custom_module)
+            sys.modules[self.module_name] = custom_module
 
             print("Resource file imported successfully")
             self.state = 1
+            self.import_modules[self.module_name] = custom_module
         except NameError as e:
             if "name 'qt_resource_struct' is not defined" in str(e):
                 print(e)
@@ -87,6 +107,12 @@ class Resource:
         except ImportError as e:
             self.state = 2
             raise Exception(f"Failed to import resource file: {e}")
+
+    def reload(self):
+        try:
+            importlib.reload(self.import_modules[self.module_name])
+        except ImportError as e:
+            raise Exception(f"Failed to reload resource file: {e}")
 
     def getImages(self, prefix=":/icons"):
         def getList(root_dir):

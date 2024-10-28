@@ -6,12 +6,16 @@ email: nbxlc@hotmail.com
 """
 
 
-from .base import GoogleMaterialBase
+from .base import GoogleMaterialBase, IconifyBase, SimpleIconsBase
 
 
 class QFluentManager():
 
     google = GoogleMaterialBase()
+
+    iconify = IconifyBase()
+
+    simpleicons = SimpleIconsBase()
 
 
 

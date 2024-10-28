@@ -20,13 +20,20 @@ from pathlib import Path
 
 from qfluentwidgets import getIconColor, Theme, FluentIconBase, qconfig
 
-from .tools import AsyncGoogleDownloader
+from .download import AsyncGoogleDownloader, AsyncIconifyDownloader, AsyncSimpleIconsDownloader
 from .rc import QRC, Resource, QrcParser
 from .enum_ import ExtendableEnum
 
 
+class QFluentIconBase(FluentIconBase):
 
-class GoogleMaterialIconBase(FluentIconBase, ExtendableEnum):
+    def __init__(self):
+        super().__init__()
+        self.size = 24
+        self.servicesProvided = ''
+        self.prefix = ':/app'
+        self.iconPath = 'icons'
+        self.fontPath = 'fonts'
 
     @classmethod
     def add(cls, name, value):
@@ -36,9 +43,26 @@ class GoogleMaterialIconBase(FluentIconBase, ExtendableEnum):
     def get(cls, name):
         getattr(cls, name)
 
+
+class GoogleMaterialIconBase(QFluentIconBase, ExtendableEnum):
+
     def path(self, theme=Theme.AUTO):
         theme = qconfig.theme if theme == Theme.AUTO else theme
-        return f":{self.prefix}/{self.servicesProvided}/{self.iconPath}/{self.value}_{getIconColor(theme, reverse=True)}_{self.size}.svg"
+        return f":{self.prefix}/{self.servicesProvided}/{self.iconPath}/{self.value}_{getIconColor(theme, reverse=False)}_{self.size}.svg"
+
+
+class IconifyIconBase(QFluentIconBase, ExtendableEnum):
+
+    def path(self, theme=Theme.AUTO):
+        theme = qconfig.theme if theme == Theme.AUTO else theme
+        return f":{self.prefix}/{self.servicesProvided}/{self.iconPath}/{self.value}_{getIconColor(theme)}_{self.size}.svg"
+
+
+class SimpleIconsIconBase(QFluentIconBase, ExtendableEnum):
+
+    def path(self, theme=Theme.AUTO):
+        theme = qconfig.theme if theme == Theme.AUTO else theme
+        return f":{self.prefix}/{self.servicesProvided}/{self.iconPath}/{self.value}_{getIconColor(theme)}_{self.size}.svg"
 
 
 class IconFontBase():
@@ -50,12 +74,18 @@ class IconFontBase():
         self.iconPath = 'icons'
         self.fontPath = 'fonts'
         self.size = 24
+        self.icons = []
+        self.waitTime = 20
+        self.timer = None
 
         self.root_path = './'
         self.qrcPath = os.path.join(self.root_path, 'resources', 'resource_qfe.qrc')
         self.resourcePath = os.path.join(self.root_path, 'resource_qfe.py')
 
         self.pyside_dir = Path(ref_mod.__file__).resolve().parent
+
+        self.downloader = None
+        self.library = None
 
     def init(self):
         self.resource = Resource(self.resourcePath)
@@ -87,6 +117,9 @@ class IconFontBase():
     def setPrefix(self, prefix):
         self.prefix = prefix
 
+    def setLibrary(self, library: str):
+        self.library = library
+
     def getFontPath(self):
         return os.path.join(self.root_path, 'resources', self.servicesProvided, self.fontPath)
 
@@ -113,7 +146,6 @@ class IconFontBase():
 
     def setAttr(self, cls):
         prefix = ':' + os.path.join(self.prefix, self.servicesProvided, self.iconPath)
-
         images = self.resource.getImages(prefix)
         for img in images:
             (filepath, filename) = os.path.split(img)
@@ -121,47 +153,43 @@ class IconFontBase():
             name = name.split('_')[0]
             self.extend(cls, name.upper(), name)
 
-    def rcc(self):
+    def rcc1(self):
+        async def async_rcc():
+            async def compile():
+                exe = os.path.join(self.pyside_dir, "rcc")
+                cmd = [
+                    'pyside6-rcc',
+                    '-g',
+                    'python',
+                    self.qrcPath,
+                    '-o',
+                    self.resourcePath
+                ]
+                process = subprocess.run(cmd)
+                if process.returncode != 0:
+                    command = ' '.join(cmd)
+                    print(f"'{command}' returned {process.returncode}", file=sys.stderr)
+                else:
+                    print("rcc success!")
+
+            await compile()
+
+        asyncio.run(async_rcc())
+
+    async def rcc(self):
         exe = os.path.join(self.pyside_dir, "rcc")
         cmd = [
             'pyside6-rcc',
-            '-g',
-            'python',
             self.qrcPath,
             '-o',
             self.resourcePath
         ]
-        returncode = subprocess.call(cmd)
-        if returncode != 0:
+        process = subprocess.run(cmd)
+        if process.returncode != 0:
             command = ' '.join(cmd)
-            print(f"'{command}' returned {returncode}", file=sys.stderr)
-
-    def download(self):
-        pass
-
-
-class GoogleMaterialBase(IconFontBase):
-
-    def __init__(self):
-        super().__init__()
-        self.servicesProvided = 'google'
-        self.prefix = '/app'
-        self.icons = []
-        self.waitTime = 20
-        self.timer = None
-
-    def setAttr(self):
-        super().setAttr(GoogleMaterialIconBase)
-
-    def setSize(self, size):
-        self.size = size
-        GoogleMaterialIconBase.size = size
-
-    def init(self):
-        super().init()
-        if os.path.exists(self.resourcePath):
-            self.resource.load()
-            self.setAttr()
+            print(f"'{command}' returned {process.returncode}", file=sys.stderr)
+        else:
+            print("rcc success!")
 
     def download(self, name: Union[str, list], theme=Theme.AUTO, color: QColor = None, size=24):
         theme = qconfig.theme if theme == Theme.AUTO else theme
@@ -169,7 +197,9 @@ class GoogleMaterialBase(IconFontBase):
 
         async def async_download():
             async def download_icons():
-                downloader = AsyncGoogleDownloader(os.path.join(self.root_path, 'resources', self.servicesProvided, self.iconPath))
+                process = self.downloader(
+                    os.path.join(self.root_path, 'resources', self.servicesProvided, self.iconPath))
+                process.setLibrary(self.library)
 
                 # 并发下载多个图标
                 # icons = [
@@ -179,10 +209,9 @@ class GoogleMaterialBase(IconFontBase):
                 # ]
 
                 tasks = [
-                    downloader.download(icon_name, color, size)
+                    process.download(icon_name, color, size)
                     for icon_name, color, size in self.icons
                 ]
-
                 results = await asyncio.gather(*tasks)
 
                 for result in results:
@@ -195,22 +224,21 @@ class GoogleMaterialBase(IconFontBase):
                             self.qrc.add_resource(os.path.join(self.servicesProvided, self.iconPath, filename),
                                                   self.prefix)
                             name1 = filename.split('_')[0]
-                        GoogleMaterialIconBase.add(name1.upper(), name1)
+                        QFluentIconBase.add(name1.upper(), name1)
                     else:
                         print(f"图标 {result.icon_name} 下载失败: {result.error}")
 
                 self.icons.clear()
-                self.rcc()
-                self.resource.load()
+                self.resource.reload()
 
-                await downloader.close()
-
-                # 添加RCC
+                await self.rcc()
+                await process.close()
 
             await download_icons()
 
         if isinstance(name, str):
-            if not os.path.exists(os.path.join(self.root_path, 'resources', self.servicesProvided, self.iconPath, '_'.join((name, color, str(size)))) + '.svg'):
+            if not os.path.exists(os.path.join(self.root_path, 'resources', self.servicesProvided, self.iconPath,
+                                               '_'.join((name, color, str(size)))) + '.svg'):
                 self.icons.append((name, color, size))
         elif isinstance(name, list):
             if not os.path.exists(
@@ -221,6 +249,72 @@ class GoogleMaterialBase(IconFontBase):
             self.timer = QTimer()
             self.timer.singleShot(self.waitTime, lambda: asyncio.run(async_download()))
             self.timer.startTimer(self.waitTime)
+
+
+class GoogleMaterialBase(IconFontBase):
+
+    def __init__(self):
+        super().__init__()
+        self.servicesProvided = 'google'
+        self.downloader = AsyncGoogleDownloader
+
+    def setSize(self, size):
+        self.size = size
+        GoogleMaterialIconBase.size = size
+
+    def setAttr(self):
+        super().setAttr(GoogleMaterialIconBase)
+
+    def init(self):
+        super().init()
+        if os.path.exists(self.resourcePath):
+            self.resource.load()
+            self.setAttr()
+
+
+class IconifyBase(IconFontBase):
+
+    def __init__(self):
+        super().__init__()
+        self.servicesProvided = 'iconify'
+        self.library = "material-symbols"
+        self.downloader = AsyncIconifyDownloader
+
+    def setSize(self, size):
+        self.size = size
+        IconifyIconBase.size = size
+
+    def setAttr(self):
+        super().setAttr(IconifyIconBase)
+
+    def init(self):
+        super().init()
+        if os.path.exists(self.resourcePath):
+            self.resource.load()
+            self.setAttr()
+
+
+class SimpleIconsBase(IconFontBase):
+
+    def __init__(self):
+        super().__init__()
+        self.servicesProvided = 'simpleicons'
+        self.downloader = AsyncSimpleIconsDownloader
+
+    def setSize(self, size):
+        self.size = size
+        SimpleIconsIconBase.size = size
+
+    def setAttr(self):
+        super().setAttr(SimpleIconsIconBase)
+
+    def init(self):
+        super().init()
+        if os.path.exists(self.resourcePath):
+            self.resource.load()
+            self.setAttr()
+
+
 
 
 
