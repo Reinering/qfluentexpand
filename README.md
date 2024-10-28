@@ -11,7 +11,7 @@
 
 ## usage
 
-## pyside6 designer custom plugin
+## pyside6 designer custom plugin 
 
 ### conda environment
 
@@ -30,30 +30,52 @@
 
 
 
-### 自动加载 google font icon
+### 自动加载 iconify / simpleicons / 图标库
 
+#### iconify 使用
 ```
     # UI 启动前 加载 初始化
     from qfluentexpand.icongenie.manager import QFluentManager
     
     # 
-    material = QFluentManager.google    # google font icon manager
-    material.setRootPath('./')     # 设置resource文件资源路径， 建议设置项目根目录 创建qrc文件名是固定的：resource_qfe.qrc
-    material.setResourcePath(os.path.join(ROOT_PATH, "resource_qfe_rc.py"))     # 设置qrc编译后的资源文件路径 不设置时默认: ./resource_qfe_rc.py
-    material.init()
+    iconify = QFluentManager.iconify    # iconify font icon manager
+    iconify.setRootPath('./')     # 设置resource文件资源路径， 建议设置项目根目录 创建qrc文件名是固定的：resource_qfe.qrc
+    # iconify.setResourcePath("./resource_qfe_rc.py")     # 设置qrc编译后的资源文件路径 不设置时默认: ./resource_qfe_rc.py
+    iconify.init()
     
     # UI文件中 引用icon
     from qfluentexpand.icongenie.icon import QFluentIcon
     
-    QFluentIcon.googleIcon("SETTING")   # 获取google font icon
+    QFluentIcon.iconIfy("SETTING")   # 获取google font icon
     # button = PushButton(FluentIcon.SETTING, 'Setting', self)         # 可以将[PyQt-Fluent-Widgets]的FluentIcon
-    button = PushButton(QFluentIcon.googleIcon("SETTING"), 'Setting', self)   # 可以将[PyQt-Fluent-Widgets]的FluentIcon 直接替换为QFluentIcon.googleIcon("Setting")
+    button = PushButton(QFluentIcon.iconIfy("SETTING"), 'Setting', self)   # 可以将[PyQt-Fluent-Widgets]的FluentIcon 直接替换为QFluentIcon.iconIfy("Setting")
     
 ```
-Setting icon 会自动加载 google font icon
-所以 QFluentIcon.googleIcon("XXXX") 必须 google font icon name, 请参考[google font icon](https://fonts.google.com/icons)
 
-1、第一次运行时，会自动下载google font icon 到设置的资源路径下 (icon 命名规则: 小写(google font icon name) + color(hex) + size + '.svg')
+#### simpleicons 使用
+```
+    # UI 启动前 加载 初始化
+    from qfluentexpand.icongenie.manager import QFluentManager
+    
+    # 
+    simpleicons = QFluentManager.simpleicons    # simpleicons font icon manager
+    simpleicons.setRootPath('./')     # 设置resource文件资源路径， 建议设置项目根目录 创建qrc文件名是固定的：resource_qfe.qrc
+    # simpleicons.setResourcePath("./resource_qfe_rc.py")     # 设置qrc编译后的资源文件路径 不设置时默认: ./resource_qfe_rc.py
+    simpleicons.init()
+    
+    # UI文件中 引用icon
+    from qfluentexpand.icongenie.icon import QFluentIcon
+    
+    QFluentIcon.simpleIcons("SETTING")   # 获取google font icon
+    # button = PushButton(FluentIcon.SETTING, 'Setting', self)         # 可以将[PyQt-Fluent-Widgets]的FluentIcon
+    button = PushButton(QFluentIcon.simpleIcons("SETTING"), 'Setting', self)   # 可以将[PyQt-Fluent-Widgets]的FluentIcon 直接替换为QFluentIcon.simpleIcons("Setting")
+    
+```
+
+Setting icon 会自动加载 google font icon
+所以 QFluentIcon.iconIfy("XXXX") 必须 icon name, 请参考[google font icon](https://fonts.google.com/icons) / [simpleicons](https://simpleicons.org/) / [iconify](https://iconify.design/)
+
+1、第一次运行时，会自动下载icon 到设置的资源路径下 (icon 命名规则: 小写(icon name) + color(hex) + size + '.svg')
 
 ![resource](/public/images/resource.png "resource") 
 
@@ -61,19 +83,20 @@ Setting icon 会自动加载 google font icon
 
 ![qrc](/public/images/qrc.png "qrc") 
     
-2、编译后，然后重新运行程序，会自动加载到 GoogleMaterialIconBase 中，QFluentIcon.googleIcon("SETTING")调用也是从GoogleMaterialIconBase获取的
+2、编译后，然后重新运行程序，会自动加载到 IconifyIconBase / SimpleIconsIconBase 中
 
 ![ui](/public/images/ui.png "ui") 
 
-注意： resource_qfe_rc.py 不需要手动引入，模块会自动引入。但打包时，需要注意打包工具配置: 
+注意： 
 
-    1、pyinstaller:  addData: ./resource_qfe_rc.py;./
-    2、nuitka:  include-data-files: ./resource_qfe_rc.py=./resource_qfe_rc.py
+    1、resource_qfe_rc.py 不需要手动引入，模块会自动引入。但打包时，需要注意打包工具配置: 
+
+        1> pyinstaller:  addData: ./resource_qfe_rc.py;./
+        2> nuitka:  include-data-files: ./resource_qfe_rc.py=./resource_qfe_rc.py
+    2、icon下载是在程序启动开始前期，之后更改并不会触发下载，需要重新启动程序。多主题下，请切换主题后重新启动程序，促使下载新的icon。下载失败，也是需要重新启动程序，重新下载。
 
 ### 其他属性设置
 ```
-    # icon size
-    material.setSize(32)    # 设置获取google font icon size
     
     # icon color 是根据PyQt-Fluent-Widgets的theme设置的取得颜色hex值
 
