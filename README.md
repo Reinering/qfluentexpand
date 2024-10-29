@@ -30,9 +30,9 @@
 
 
 
-### 自动加载 iconify / simpleicons / 图标库
+## 自动加载 iconify / simpleicons / 图标库
 
-#### iconify 使用
+### iconify 使用
 ```
     # UI 启动前 加载 初始化
     from qfluentexpand.icongenie.manager import QFluentManager
@@ -41,7 +41,7 @@
     iconify = QFluentManager.iconify    # iconify font icon manager
     iconify.setRootPath('./')     # 设置resource文件资源路径， 建议设置项目根目录 创建qrc文件名是固定的：resource_qfe.qrc
     # iconify.setResourcePath("./resource_qfe_rc.py")     # 设置qrc编译后的资源文件路径 不设置时默认: ./resource_qfe_rc.py
-    iconify.init()
+    iconify.initialize()
     
     # UI文件中 引用icon
     from qfluentexpand.icongenie.icon import QFluentIcon
@@ -52,7 +52,7 @@
     
 ```
 
-#### simpleicons 使用
+### simpleicons 使用
 ```
     # UI 启动前 加载 初始化
     from qfluentexpand.icongenie.manager import QFluentManager
@@ -61,7 +61,7 @@
     simpleicons = QFluentManager.simpleicons    # simpleicons font icon manager
     simpleicons.setRootPath('./')     # 设置resource文件资源路径， 建议设置项目根目录 创建qrc文件名是固定的：resource_qfe.qrc
     # simpleicons.setResourcePath("./resource_qfe_rc.py")     # 设置qrc编译后的资源文件路径 不设置时默认: ./resource_qfe_rc.py
-    simpleicons.init()
+    simpleicons.initialize()
     
     # UI文件中 引用icon
     from qfluentexpand.icongenie.icon import QFluentIcon
@@ -97,12 +97,39 @@ Setting icon 会自动加载 google font icon
 
 ### 其他属性设置
 ```
-    
     # icon color 是根据PyQt-Fluent-Widgets的theme设置的取得颜色hex值
-
 ```
 
+### 脚手架 (非嵌入式)
 
+```bash
+    icongenie         
+```
+icongenie 会在根目录下生成icongenie.py 文件
+
+```python
+    # icongenie.py
+    iconify_icons = [
+        ("home", "black", 24),
+        ("search", "#2196F3", 32),
+    ]
+
+    simpleicons_icons = [
+        ("4chan", "black", 24),
+        ("aerlingus", "#006272", 32),
+    ]
+```
+将需要的icon添加到对应的列表中，然后运行icongenie.py文件，会自动下载到设置的资源路径下
+
+```bash
+    python icongenie.py
+```
+使用资源路径下的icon，可以查看resources/resource_qfe.qrc文件
+
+```python
+    QIcon(":/app/iconify/icons/home_black_24.svg")
+    QIcon(":/app/simpleicons/icons/4chan_black_24.svg")
+```
 
 
 
