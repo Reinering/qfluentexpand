@@ -100,7 +100,6 @@ class AsyncDownloader:
             session = await self._get_session()
             url = self._get_icon_url(icon_name)
             params = {"color": color, "size": size}
-            print("url:", url)
             async with session.get(url, params=params) as response:
                 if response.status == 200:
                     content = await response.read()
@@ -152,7 +151,6 @@ class AsyncIconifyDownloader(AsyncDownloader):
         return f"https://api.iconify.design/{self._library}/{icon_name}.svg"
 
 
-
 class AsyncGoogleDownloader(AsyncDownloader):
     """
     Material Icons异步下载器
@@ -176,7 +174,7 @@ class AsyncSimpleIconsDownloader(AsyncDownloader):
 
     def _get_icon_url(self, icon_name: str, color_code: str) -> str:
         """生成图标下载URL"""
-        return f"https://cdn.simpleicons.org/{icon_name}/{color_code}"
+        return f"https://cdn.simpleicons.org/{icon_name}/{color_code.lstrip('#')}"
 
     async def download(self,
                        icon_name: str,

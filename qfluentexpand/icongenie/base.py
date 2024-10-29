@@ -16,6 +16,7 @@ import os
 import sys
 import asyncio
 import subprocess
+import threading
 from pathlib import Path
 
 from qfluentwidgets import getIconColor, Theme, FluentIconBase, qconfig
@@ -84,6 +85,7 @@ class IconFontBase():
 
         self.pyside_dir = Path(ref_mod.__file__).resolve().parent
 
+        self.downloadBlock = False
         self.downloader = None
         self.library = None
 
@@ -92,10 +94,10 @@ class IconFontBase():
 
         # 判断是否打包
         if not getattr(sys, 'frozen', False) and not '__compiled__' in globals():
+            self.createFile(self.root_path)
             if not os.path.exists(self.qrcPath):
                 QRC.writeQRC(self.qrcPath, '', prefix=self.prefix)
             self.qrc = QrcParser(self.qrcPath)
-            self.createFile(self.root_path)
 
     def setSize(self, size):
         self.size = size
@@ -191,7 +193,7 @@ class IconFontBase():
         else:
             print("rcc success!")
 
-    def download(self, name: Union[str, list], theme=Theme.AUTO, color: QColor = None, size=24):
+    def download(self, name: Union[str, list], theme=Theme.AUTO, color: QColor = None):
         theme = qconfig.theme if theme == Theme.AUTO else theme
         color = getIconColor(theme, reverse=True)
 
@@ -249,17 +251,27 @@ class IconFontBase():
 
         if isinstance(name, str):
             if not os.path.exists(os.path.join(self.root_path, 'resources', self.servicesProvided, self.iconPath,
-                                               '_'.join((name, color, str(size)))) + '.svg'):
-                self.icons.append((name, color, size))
+                                               '_'.join((name, color, str(self.size)))) + '.svg'):
+                self.icons.append((name, color, self.size))
         elif isinstance(name, list):
-            if not os.path.exists(os.path.join(
-                    self.root_path, 'resources', self.servicesProvided, self.iconPath, '_'.join(name))):
-                self.icons.append(name)
+            if len(name) > 0 and (isinstance(name[0], list) or isinstance(name[0], tuple)):
+                for n in name:
+                    if not os.path.exists(os.path.join(
+                            self.root_path, 'resources', self.servicesProvided, self.iconPath, '_'.join((n[0], n[1], str(n[2]))) + '.svg')):
+                        self.icons.append(n)
+            else:
+                if not os.path.exists(os.path.join(
+                        self.root_path, 'resources', self.servicesProvided, self.iconPath, '_'.join((name[0], name[1], str(name[2]))) + '.svg')):
+                    self.icons.append(name)
 
-        if len(self.icons) == 1:
-            self.timer = QTimer()
-            self.timer.singleShot(self.waitTime, lambda: _run_async(async_download()))
-            self.timer.startTimer(self.waitTime)
+        if len(self.icons) > 0 and self.timer is None:
+            self.timer = threading.Timer(self.waitTime, lambda: _run_async(async_download()))
+            self.timer.start()
+            if self.downloadBlock:
+                self.timer.join()
+            # self.timer = QTimer()
+            # self.timer.singleShot(self.waitTime, lambda: _run_async(async_download()))
+            # self.timer.startTimer(self.waitTime)
 
 
 class GoogleMaterialBase(IconFontBase):
@@ -276,7 +288,7 @@ class GoogleMaterialBase(IconFontBase):
     def setAttr(self):
         super().setAttr(GoogleMaterialIconBase)
 
-    def init(self):
+    def initialize(self):
         super().init()
         if os.path.exists(self.resourcePath):
             self.resource.load()
@@ -298,7 +310,7 @@ class IconifyBase(IconFontBase):
     def setAttr(self):
         super().setAttr(IconifyIconBase)
 
-    def init(self):
+    def initialize(self):
         super().init()
         if os.path.exists(self.resourcePath):
             self.resource.load()
@@ -319,7 +331,7 @@ class SimpleIconsBase(IconFontBase):
     def setAttr(self):
         super().setAttr(SimpleIconsIconBase)
 
-    def init(self):
+    def initialize(self):
         super().init()
         if os.path.exists(self.resourcePath):
             self.resource.load()
