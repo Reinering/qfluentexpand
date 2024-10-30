@@ -58,7 +58,8 @@ setup(
     entry_points={
         'console_scripts': [
             # 'designer = qfluentexpand.__main__:main'
-            'designer = qfluentexpand.tools.designer:main'
+            'designer = qfluentexpand.tools.designer:main',
+            'icongenie = qfluentexpand.tools.icongenie:main',
         ]
     }
 )
