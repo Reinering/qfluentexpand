@@ -6,7 +6,6 @@ email: nbxlc@hotmail.com
 """
 
 
-from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QColor
 import PySide6 as ref_mod
 
@@ -269,9 +268,6 @@ class IconFontBase():
             self.timer.start()
             if self.downloadBlock:
                 self.timer.join()
-            # self.timer = QTimer()
-            # self.timer.singleShot(self.waitTime, lambda: _run_async(async_download()))
-            # self.timer.startTimer(self.waitTime)
 
 
 class GoogleMaterialBase(IconFontBase):
