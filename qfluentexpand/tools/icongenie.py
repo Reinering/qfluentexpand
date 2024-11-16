@@ -21,6 +21,7 @@ def createFile():
 
 
 def main():
+    print("warning: icongenie does not support use in the develop mode of qfluentexpand")
     print("Please confirm whether it is in the project root directory")
     result = ''
     while True:
@@ -28,6 +29,8 @@ def main():
         if result.lower() == 'y':
             break
         elif result.lower() == 'n':
+            return
+        elif result.lower() == 'q':
             return
         else:
             print("Please enter y or n")

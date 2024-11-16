@@ -258,7 +258,7 @@ class IconFontBase():
                     if not os.path.exists(os.path.join(
                             self.root_path, 'resources', self.servicesProvided, self.iconPath, '_'.join((n[0], n[1], str(n[2]))) + '.svg')):
                         self.icons.append(n)
-            else:
+            elif len(name) > 0:
                 if not os.path.exists(os.path.join(
                         self.root_path, 'resources', self.servicesProvided, self.iconPath, '_'.join((name[0], name[1], str(name[2]))) + '.svg')):
                     self.icons.append(name)
