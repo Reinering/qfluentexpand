@@ -15,6 +15,8 @@ class STYLESHEET(StyleSheetBase, Enum):
     """ Style sheet  """
 
     EXPAND_CARD = "expand_card"
+    TOOLBAR = "toolbar"
+    BUTTON = "button"
 
 
     def path(self, theme=Theme.AUTO):

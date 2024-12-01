@@ -31,6 +31,8 @@ class APPICON(FluentIconBase, Enum):
     SOURCE = "source"
     TERMINAL = "terminal"
 
+    ARROW_DOWN = "arrow_down"
+
 
     def path(self, theme=Theme.AUTO):
         theme = qconfig.theme if theme == Theme.AUTO else theme
