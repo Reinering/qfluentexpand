@@ -11,9 +11,10 @@ from PySide6.QtGui import QColor, QCursor, QMouseEvent
 from PySide6.QtWidgets import QFrame, QVBoxLayout, QWidget
 
 
-
-
 class PageSticky(QWidget):
+    """
+    PageSticky parent 是决定是否可以拖动的关键
+    """
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -41,7 +42,7 @@ class PageSticky(QWidget):
 
             # 限制范围在父窗口内
             if self.parent():
-                parent_rect = self.parent().rect()
+                parent_rect = self.parentWidget().rect()
                 new_pos.setX(max(0, min(new_pos.x(), parent_rect.width() - self.width())))
                 new_pos.setY(max(0, min(new_pos.y(), parent_rect.height() - self.height())))
 

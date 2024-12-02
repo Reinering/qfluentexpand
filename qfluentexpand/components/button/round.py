@@ -19,7 +19,7 @@ from qfluentexpand.common.stylesheets import STYLESHEET
 
 
 class RoundPushButton(QPushButton):
-    """ Push RoundPushButton
+    """ Round PushButton
 
     Constructors
     ------------
@@ -38,11 +38,13 @@ class RoundPushButton(QPushButton):
         self.setIcon(None)
         setFont(self)
         self._postInit()
+        self.angle = 0
         self.setBaseSize(40, 40)
 
     @__init__.register
     def _(self, text: str, parent: QWidget = None, icon: Union[QIcon, str, FluentIconBase] = None):
         self.__init__(parent=parent)
+        print("text", text)
         self.setText(text)
         self.setIcon(icon)
 
@@ -73,6 +75,10 @@ class RoundPushButton(QPushButton):
         self.setIcon(value)
         return True
 
+    def setAgnle(self, angle: int):
+        self.angle = angle
+        self.update()
+
     def mousePressEvent(self, e):
         self.isPressed = True
         super().mousePressEvent(e)
@@ -94,15 +100,12 @@ class RoundPushButton(QPushButton):
         drawIcon(icon, painter, rect, state)
 
     def paintEvent(self, e):
-
         if self.icon().isNull():
             return
         painter = QPainter(self)
         painter.setRenderHints(QPainter.RenderHint.Antialiasing |
                                QPainter.RenderHint.SmoothPixmapTransform)
 
-        if self.width() != self.height():
-            self.setFixedSize(self.height(), self.height())
         # Draw circular background
         path = QPainterPath()
         radius = min(self.width(), self.height()) / 2
@@ -120,9 +123,16 @@ class RoundPushButton(QPushButton):
 
         painter.fillPath(path, self.palette().button())
 
+        rect = self.rect()
+
         # Draw text if present
         if self.text():
             painter.setPen(self.palette().buttonText().color())
+
+            painter.translate(rect.center())
+            painter.rotate(self.angle)
+            painter.translate(-rect.center())
+
             painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, self.text())
         # Draw icon if present
         elif not self.icon().isNull():
