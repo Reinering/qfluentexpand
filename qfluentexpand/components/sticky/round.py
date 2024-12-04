@@ -35,6 +35,12 @@ class StickyRoundButton(PageSticky):
         self.button.clicked.connect(self.on_button_clicked)
         sticky_layout.addWidget(self.button)
 
+    def setFont(self, font):
+        self.button.setFont(font)
+
+    def getFont(self):
+        return self.button.font()
+
     def setAgnle(self, angle: int):
         """
         Set the rotation angle of the button
@@ -84,6 +90,12 @@ class SPrimaryRoundButton(PageSticky):
         self.button.installEventFilter(self)
         self.button.clicked.connect(self.on_button_clicked)
         sticky_layout.addWidget(self.button)
+
+    def setFont(self, font):
+        self.button.setFont(font)
+
+    def getFont(self):
+        return self.button.font()
 
     def setAgnle(self, angle: int):
         """

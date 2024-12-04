@@ -100,8 +100,7 @@ class RoundPushButton(QPushButton):
         drawIcon(icon, painter, rect, state)
 
     def paintEvent(self, e):
-        if self.icon().isNull():
-            return
+
         painter = QPainter(self)
         painter.setRenderHints(QPainter.RenderHint.Antialiasing |
                                QPainter.RenderHint.SmoothPixmapTransform)
@@ -125,8 +124,18 @@ class RoundPushButton(QPushButton):
 
         rect = self.rect()
 
+        # Draw icon if present
+        if not self.icon().isNull():
+            w, h = self.iconSize().width(), self.iconSize().height()
+            x = (self.width() - w) / 2
+            y = (self.height() - h) / 2
+
+            if self.isRightToLeft():
+                x = self.width() - w - x
+
+            self._drawIcon(self._icon, painter, QRectF(x, y, w, h))
         # Draw text if present
-        if self.text():
+        elif self.text():
             painter.setPen(self.palette().buttonText().color())
 
             painter.translate(rect.center())
@@ -134,23 +143,7 @@ class RoundPushButton(QPushButton):
             painter.translate(-rect.center())
 
             painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, self.text())
-        # Draw icon if present
-        elif not self.icon().isNull():
-            w, h = self.iconSize().width(), self.iconSize().height()
-            # x = (self.width() - w) / 2
-            # y = (self.height() - h) / 2
 
-            y = (self.height() - h) / 2
-            mw = self.minimumSizeHint().width()
-            if mw > 0:
-                x = 12 + (self.width() - mw) // 2
-            else:
-                x = 12
-
-            if self.isRightToLeft():
-                x = self.width() - w - x
-
-            self._drawIcon(self._icon, painter, QRectF(x, y, w, h))
         # super().paintEvent(e)
         painter.end()
 
