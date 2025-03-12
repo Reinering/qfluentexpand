@@ -20,6 +20,7 @@ class FilePathSelector(LineEdit):
         self.setReadOnly(True)
         self.setClearButtonEnabled(True)
         self.fileTypes = "*"
+        self.parentFolder = '/'
         self.state = False
 
         self.clearButton._icon = FIF.RIGHT_ARROW
@@ -31,6 +32,9 @@ class FilePathSelector(LineEdit):
 
     def setFileTypes(self, fileTypes):
         self.fileTypes = fileTypes
+
+    def setParentFolder(self, folder):
+        self.parentFolder = folder
 
     def setText(self, arg__1: str) -> None:
         super().setText(arg__1)
@@ -66,8 +70,9 @@ class FilePathSelector(LineEdit):
                 self.clearButton.setVisible(self.hasFocus())
         else:
             try:
-                filePath = QFileDialog.getOpenFileName(self, u"选择文件", "/",
+                filePath = QFileDialog.getOpenFileName(self, u"选择文件", self.parentFolder,
                                                        self.fileTypes)
+
                 if not filePath[0]:
                     return
 
@@ -87,6 +92,7 @@ class FolderPathSelector(LineEdit):
         self.setReadOnly(True)
         self.setClearButtonEnabled(True)
         self.state = False
+        self.parentFolder = '/'
 
         self.clearButton._icon = FIF.RIGHT_ARROW
         self.clearButton.clicked.disconnect()
@@ -103,6 +109,9 @@ class FolderPathSelector(LineEdit):
         else:
             self.state = False
             self.clearButton._icon = FIF.RIGHT_ARROW
+
+    def setParentFolder(self, folder):
+        self.parentFolder = folder
 
     def focusInEvent(self, e):
         super().focusInEvent(e)
@@ -137,7 +146,7 @@ class FolderPathSelector(LineEdit):
                 self.clearButton.setVisible(self.hasFocus())
         else:
             try:
-                folderPath = QFileDialog.getExistingDirectory(self, u"选择目录", "/",
+                folderPath = QFileDialog.getExistingDirectory(self, u"选择目录", self.parentFolder,
                                                               QFileDialog.Option.ShowDirsOnly)
                 if not folderPath:
                     return
