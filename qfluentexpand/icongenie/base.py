@@ -246,7 +246,7 @@ class IconFontBase():
                 loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(loop)
 
-            return loop.run_until_complete(coro)
+                return loop.run_until_complete(coro)
 
         if isinstance(name, str):
             if not os.path.exists(os.path.join(self.root_path, 'resources', self.servicesProvided, self.iconPath,
@@ -264,10 +264,15 @@ class IconFontBase():
                     self.icons.append(name)
 
         if len(self.icons) > 0 and self.timer is None:
-            self.timer = threading.Timer(self.waitTime, lambda: _run_async(async_download()))
-            self.timer.start()
-            if self.downloadBlock:
-                self.timer.join()
+            try:
+                self.timer = threading.Timer(self.waitTime, lambda: _run_async(async_download()))
+                self.timer.start()
+                if self.downloadBlock:
+                    self.timer.join()
+            except Exception as e:
+                print(e)
+            except OSError as e:
+                print(e)
 
 
 class GoogleMaterialBase(IconFontBase):
