@@ -472,6 +472,9 @@ class FileSettingCardWidget(SettingCardWidget):
     def setFileTypes(self, fileTypes):
         self.selector.setFileTypes(fileTypes)
 
+    def setParentFolder(self, folder):
+        self.selector.parentFolder = folder
+
     def setReadOnly(self, checked):
         self.selector.setReadOnly(checked)
 
@@ -494,6 +497,9 @@ class FolderSettingCardWidget(SettingCardWidget):
         self.selector = FolderPathSelector(self)
         self.selector.textChanged.connect(self.on_selector_textChanged)
         self.addWidget(self.selector)
+
+    def setParentFolder(self, folder):
+        self.selector.parentFolder = folder
 
     def setReadOnly(self, checked):
         self.selector.setReadOnly(checked)
