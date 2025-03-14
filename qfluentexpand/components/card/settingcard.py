@@ -16,7 +16,8 @@ from qfluentwidgets import (
     CardWidget,
     ExpandGroupSettingCard, PrimaryPushButton, BodyLabel,
     SettingCard,
-    ComboBox
+    ComboBox,
+    SwitchButton
 )
 from qfluentwidgets.common.icon import FluentIcon as FIF
 from qfluentwidgets.components.settings.expand_setting_card import GroupSeparator, SpaceWidget
@@ -136,6 +137,43 @@ class FileSelectorSettingCard(SettingCard):
 
     def setFileTypes(self, fileTypes):
         self.selector.setFileTypes(fileTypes)
+
+
+class SwitchSettingCard(SettingCard):
+    """ Setting card with Switch Button """
+
+    checkedChanged = Signal(bool)
+
+    def __init__(self, icon: Union[str, QIcon, FluentIconBase], title, content=None, parent=None):
+        super().__init__(icon, title, content, parent)
+        self.switch = SwitchButton(self)
+        self.switch.checkedChanged.connect(self.on_SwitchButton_checkedChanged)
+        self.hBoxLayout.addWidget(self.switch, 0, Qt.AlignmentFlag.AlignRight)
+        self.hBoxLayout.addSpacing(16)
+
+    def on_SwitchButton_checkedChanged(self, checked):
+        self.checkedChanged.emit(checked)
+
+    def getOnText(self):
+        return self.switch._onText
+
+    def setOnText(self, text):
+        self.switch._onText = text
+        self.switch._updateText()
+
+    def getOffText(self):
+        return self.switch._offText
+
+    def setOffText(self, text):
+        self.switch._offText = text
+        self.switch._updateText()
+
+    def isChecked(self):
+        return self.switch.isChecked()
+
+    def setChecked(self, isChecked):
+        """ set checked state """
+        self.switch.setChecked(isChecked)
 
 
 class ExpandCard(QScrollArea):
