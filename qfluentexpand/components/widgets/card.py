@@ -270,10 +270,10 @@ class SwitchSettingCardWidget(SettingCardWidget):
     def __init__(self, icon: Union[str, QIcon, FluentIconBase], title, content=None, parent=None):
         super().__init__(icon, title, content, parent)
         self.switch = SwitchButton(self)
-        self.switch.checkedChanged.connect(self.on_WwitchButton_checkedChanged)
+        self.switch.checkedChanged.connect(self.on_SwitchButton_checkedChanged)
         self.addWidget(self.switch)
 
-    def on_WwitchButton_checkedChanged(self, checked):
+    def on_SwitchButton_checkedChanged(self, checked):
         self.checkedChanged.emit(checked)
 
     def getOnText(self):
