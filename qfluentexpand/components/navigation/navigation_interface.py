@@ -15,7 +15,7 @@ from PySide6.QtWidgets import QWidget
 from qfluentwidgets.components.navigation.navigation_panel import NavigationPanel, NavigationItemPosition, NavigationWidget, NavigationDisplayMode
 from qfluentwidgets.components.navigation.navigation_widget import NavigationTreeWidget
 from qfluentwidgets.common.style_sheet import FluentStyleSheet
-from qfluentwidgets.common.icon import isDarkTheme, FluentIconBase, FluentIconBase as FIF
+from qfluentwidgets.common.icon import isDarkTheme, FluentIconBase, FluentIcon as FIF
 
 
 class NavigationInterface(QWidget):
@@ -247,10 +247,12 @@ class NavigationInterface(QWidget):
         if isVisible:
             self.panel.setReturnButtonVisible(isVisible)
             self.panel.returnButton.setIcon(FIF.RETURN)
-            self.panel.returnButton.setEnabled(True)
+            self.panel.returnButton.setDisabled(False)
+            self.panel.history.emptyChanged.connect(self.panel.returnButton.setDisabled)
         else:
             self.panel.returnButton.setIcon(QIcon())
-            self.panel.returnButton.setEnabled(False)
+            self.panel.returnButton.setDisabled(True)
+            self.panel.history.emptyChanged.disconnect(self.panel.returnButton.setDisabled)
 
     def setCollapsible(self, collapsible: bool):
         self.panel.setCollapsible(collapsible)
@@ -266,7 +268,7 @@ class NavigationInterface(QWidget):
         return self.panel.widget(routeKey)
 
     def eventFilter(self, obj, e: QEvent):
-        if obj is not self.panel or e.type() != QEvent.Resize:
+        if obj is not self.panel or e.type() != QEvent.Type.Resize:
             return super().eventFilter(obj, e)
 
         if self.panel.displayMode != NavigationDisplayMode.MENU:
