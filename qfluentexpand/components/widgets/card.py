@@ -146,6 +146,7 @@ class LineSettingCardWidget(SettingCardWidget):
     """ Setting card with CaptionLabel """
 
     textChanged = Signal(str)
+    returnPressed = Signal()
 
     def __init__(self, icon: Union[str, QIcon, FluentIconBase], title, content=None, parent=None):
         super().__init__(icon, title, content, parent)
@@ -153,6 +154,7 @@ class LineSettingCardWidget(SettingCardWidget):
         self.line.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.line.setReadOnly(True)
         self.line.textChanged.connect(self._textChanged)
+        self.line.returnPressed.connect(self._returnPressed)
         self.addWidget(self.line)
 
     def setText(self, text):
@@ -163,6 +165,9 @@ class LineSettingCardWidget(SettingCardWidget):
 
     def _textChanged(self, text):
         self.textChanged.emit(text)
+
+    def _returnPressed(self):
+        self.returnPressed.emit()
 
 
 class PushSettingCardWidget(SettingCardWidget):
@@ -462,11 +467,13 @@ class MSECComboBoxSettingCardWidget(SettingCardWidget):
 class FileSettingCardWidget(SettingCardWidget):
 
     textChanged = Signal(str)
+    returnPressed = Signal()
 
     def __init__(self, icon: Union[str, QIcon, FluentIconBase], title, content=None, parent=None):
         super().__init__(icon, title, content, parent)
         self.selector = FilePathSelector(self)
         self.selector.textChanged.connect(self.on_selector_textChanged)
+        self.selector.returnPressed.connect(self.on_selector_returnPressed)
         self.addWidget(self.selector)
 
     def setFileTypes(self, fileTypes):
@@ -487,15 +494,20 @@ class FileSettingCardWidget(SettingCardWidget):
     def on_selector_textChanged(self, text):
         self.textChanged.emit(text)
 
+    def on_selector_returnPressed(self):
+        self.returnPressed.emit()
+
 
 class FolderSettingCardWidget(SettingCardWidget):
 
     textChanged = Signal(str)
+    returnPressed = Signal()
 
     def __init__(self, icon: Union[str, QIcon, FluentIconBase], title, content=None, parent=None):
         super().__init__(icon, title, content, parent)
         self.selector = FolderPathSelector(self)
         self.selector.textChanged.connect(self.on_selector_textChanged)
+        self.selector.returnPressed.connect(self.on_selector_returnPressed)
         self.addWidget(self.selector)
 
     def setParentFolder(self, folder):
@@ -512,3 +524,6 @@ class FolderSettingCardWidget(SettingCardWidget):
 
     def on_selector_textChanged(self, text):
         self.textChanged.emit(text)
+
+    def on_selector_returnPressed(self):
+        self.returnPressed.emit()
