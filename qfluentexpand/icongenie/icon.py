@@ -19,7 +19,7 @@ from .manager import QFluentManager
 class QFluentIcon():
 
     @classmethod
-    def googleIcon(cls, name, theme=Theme.AUTO, reverse=True):
+    def googleIcon(cls, name, theme=Theme.AUTO, reverse=False):
         try:
             name = name.upper()
             GoogleMaterialIconBase.get(name)
@@ -42,7 +42,7 @@ class QFluentIcon():
             return QIcon()
 
     @classmethod
-    def iconIfy(cls, name, theme=Theme.AUTO, reverse=True):
+    def iconIfy(cls, name, theme=Theme.AUTO, reverse=False):
         try:
             name = name.upper()
             IconifyIconBase.get(name)
@@ -66,7 +66,7 @@ class QFluentIcon():
             return QIcon()
 
     @classmethod
-    def simpleIcons(cls, name, theme=Theme.AUTO, reverse=True):
+    def simpleIcons(cls, name, theme=Theme.AUTO, reverse=False):
         try:
             name = name.upper()
             SimpleIconsIconBase.get(name)

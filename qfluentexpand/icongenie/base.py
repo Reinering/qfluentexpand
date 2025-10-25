@@ -194,7 +194,7 @@ class IconFontBase():
 
     def download(self, name: Union[str, list], theme=Theme.AUTO, color: QColor = None):
         theme = qconfig.theme if theme == Theme.AUTO else theme
-        color = getIconColor(theme, reverse=True)
+        color = getIconColor(theme)
 
         async def async_download():
             async def download_icons():
