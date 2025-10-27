@@ -80,7 +80,7 @@ class IconFontBase():
 
         self.root_path = './'
         self.qrcPath = os.path.join(self.root_path, 'resources', 'resource_qfe.qrc')
-        self.resourcePath = os.path.join(self.root_path, 'resource_qfe.py')
+        self.resourcePath = os.path.join(self.root_path, 'resources', 'resource_qfe.py')
 
         self.pyside_dir = Path(ref_mod.__file__).resolve().parent
 
@@ -107,7 +107,7 @@ class IconFontBase():
             return
         self.root_path = path
         self.qrcPath = os.path.join(self.root_path, 'resources', 'resource_qfe.qrc')
-        self.resourcePath = os.path.join(self.root_path, 'resource_qfe_rc.py')
+        self.resourcePath = os.path.join(self.root_path, 'resources', 'resource_qfe_rc.py')
 
     def setQRCPath(self, path):
         self.qrcPath = path

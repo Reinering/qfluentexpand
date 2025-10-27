@@ -39,8 +39,8 @@
     
     # 
     iconify = QFluentManager.iconify    # iconify font icon manager
-    iconify.setRootPath('./')     # 设置resource文件资源路径， 建议设置项目根目录 创建qrc文件名是固定的：resource_qfe.qrc
-    # iconify.setResourcePath("./resource_qfe_rc.py")     # 设置qrc编译后的资源文件路径 不设置时默认: ./resource_qfe_rc.py
+    iconify.setRootPath('./')     # 设置resource文件资源路径， 建议设置项目根目录 创建qrc文件名是固定的：resource/resource_qfe.qrc
+    # iconify.setResourcePath("./resources/resource_qfe_rc.py")     # 设置qrc编译后的资源文件路径 不设置时默认: resource_qfe.qrc同路径下resource_qfe_rc.py
     iconify.initialize()
     
     # UI文件中 引用icon
@@ -59,8 +59,8 @@
     
     # 
     simpleicons = QFluentManager.simpleicons    # simpleicons font icon manager
-    simpleicons.setRootPath('./')     # 设置resource文件资源路径， 建议设置项目根目录 创建qrc文件名是固定的：resource_qfe.qrc
-    # simpleicons.setResourcePath("./resource_qfe_rc.py")     # 设置qrc编译后的资源文件路径 不设置时默认: ./resource_qfe_rc.py
+    simpleicons.setRootPath('./')     # 设置resource文件资源路径， 建议设置项目根目录 创建qrc文件名是固定的：resource/resource_qfe.qrc
+    # simpleicons.setResourcePath("./resources、resource_qfe_rc.py")     # 设置qrc编译后的资源文件路径 不设置时默认: resource_qfe.qrc同路径下resource_qfe_rc.py
     simpleicons.initialize()
     
     # UI文件中 引用icon
