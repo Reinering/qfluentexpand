@@ -7,7 +7,6 @@ author: Reiner
 email: nbxlc@hotmail.com
 """
 
-
 import os
 import sys
 import time
@@ -24,6 +23,7 @@ VIRTUAL_ENV = "VIRTUAL_ENV"
 pyside_dir = Path(ref_mod.__file__).resolve().parent
 
 ARGV = sys.argv[1:]
+
 
 def is_pyenv_python():
     pyenv_root = os.environ.get("PYENV_ROOT")
@@ -47,6 +47,18 @@ def init_virtual_env():
     if is_virtual_env() and not os.environ.get(VIRTUAL_ENV):
         os.environ[VIRTUAL_ENV] = sys.prefix
 
+
+def get_env():
+    os.environ["PATH"] = os.fspath(Path(sys._base_executable).parent).replace('\\', '/') + ';' + str(
+        Path(ref_mod.__file__).resolve().parent).replace('\\', '/')
+    os.environ["PYTHONPATH"] = sys._base_executable
+    os.environ["PYTHONHOME"] = os.fspath(Path(sys._base_executable).parent).replace('\\', '/')
+    os.environ['QT_PLUGIN_PATH'] = os.fspath(Path(ref_mod.__file__).resolve().parent / 'plugins')
+    os.environ['QML2_IMPORT_PATH'] = os.fspath(Path(ref_mod.__file__).resolve().parent / 'qml')
+
+    return os.environ.copy()
+
+
 def qt_tool_wrapper(qt_tool, args, libexec=False):
     # Taking care of pyside6-uic, pyside6-rcc, and pyside6-designer
     # listed as an entrypoint in setup.py
@@ -56,11 +68,14 @@ def qt_tool_wrapper(qt_tool, args, libexec=False):
     else:
         exe = pyside_dir / qt_tool
 
-    cmd = [os.fspath(exe)] + args
+    cmd = [os.fspath(exe).replace('\\', '/')] + args
     print("cmd", cmd)
+
+    env = get_env()
+
     while True:
         startTime = time.time()
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
         out, err = proc.communicate()
         if err:
             msg = err.decode("utf-8")
@@ -79,12 +94,14 @@ def qt_tool_wrapper(qt_tool, args, libexec=False):
     else:
         return (False, f"Error: {proc.stderr}")
 
+
 def ui_tool_binary(binary):
     """Return the binary of a UI tool (App bundle on macOS)."""
     if sys.platform != "darwin":
         return binary
     name = binary[0:1].upper() + binary[1:]
     return f"{name}.app/Contents/MacOS/{name}"
+
 
 def _extend_path_var(var, value, prepend=False):
     print(var, value)
@@ -138,7 +155,7 @@ def designer():
     elif sys.platform == 'win32':
         # Find Python DLLs from the base installation
         if is_virtual_env():
-            _extend_path_var("PATH", os.fspath(Path(sys._base_executable).parent), True)
+            _extend_path_var("PATH", os.fspath(Path(sys._base_executable).parent).replace('\\', '/'), True)
 
     return qt_tool_wrapper(ui_tool_binary("designer"), ARGV)
 
@@ -147,7 +164,8 @@ class Usage(Exception):
     def __init__(self, msg):
         self.msg = msg
 
-def main(*argv,  **kwargs):
+
+def main(*argv, **kwargs):
     if not argv:
         argv = sys.argv[1:]
 
@@ -190,16 +208,12 @@ def main(*argv,  **kwargs):
                 _extend_path_var('PYSIDE_DESIGNER_PLUGINS', str(pluginPath / 'expand') + ';' + str(pluginPath))
 
             return designer()
-
-
         except getopt.error as msg:
             raise Usage(msg)
     except Usage as err:
         print >> sys.stderr, err.msg
         print >> sys.stderr, "for help use --help"
         return 2
-
-
 
 
 if __name__ == "__main__":
