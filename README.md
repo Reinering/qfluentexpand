@@ -102,9 +102,9 @@ Setting icon 会自动加载 google font icon
 注意： 
 
     1、resource_qfe_rc.py 不需要手动引入，模块会自动引入。但打包时，需要注意打包工具配置: 
-
-        1> pyinstaller:  addData: ./resource_qfe_rc.py;./
-        2> nuitka:  include-data-files: ./resource_qfe_rc.py=./resource_qfe_rc.py
+        例如: simpleicons.setResourcePath默认不设置时
+            1> pyinstaller:  addData: resources/resource_qfe_rc.py;resources/
+            2> nuitka:  include-data-files: resources/resource_qfe_rc.py=resources/resource_qfe_rc.py
     2、icon下载是在程序启动开始前期，之后更改并不会触发下载，需要重新启动程序。多主题下，请切换主题后重新启动程序，促使下载新的icon。下载失败，也是需要重新启动程序，重新下载。
     3、特别注意：下载资源时，建议切换theme，下载不同颜色的icon，虽然icon的颜色随theme，但是当控件有背景颜色时，icon就会放弃跟随theme的颜色，使用icon本身的颜色，所以建议下载不同颜色的icon，以适应不同背景颜色的控件。
 
