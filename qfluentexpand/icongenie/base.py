@@ -238,6 +238,14 @@ class IconFontBase():
 
             await download_icons()
 
+        def plagiarism_check(icon):
+            """检查是self.icons否存在重复图标下载"""
+            for item in self.icons:
+                if item[0] == icon[0] and item[1] == icon[1] and item[2] == icon[2]:
+                    return True
+            return False
+
+
         def _run_async(coro):
             """安全地运行异步代码的辅助方法"""
             try:
@@ -250,18 +258,23 @@ class IconFontBase():
 
         if isinstance(name, str):
             if not os.path.exists(os.path.join(self.root_path, 'resources', self.servicesProvided, self.iconPath,
-                                               '_'.join((name, color, str(self.size)))) + '.svg'):
-                self.icons.append((name, color, self.size))
+                                               '_'.join((name.replace(':', '-'), color, str(self.size)))) + '.svg'):
+                if not plagiarism_check((name, color, self.size)):
+                    self.icons.append((name, color, self.size))
         elif isinstance(name, list):
             if len(name) > 0 and (isinstance(name[0], list) or isinstance(name[0], tuple)):
                 for n in name:
                     if not os.path.exists(os.path.join(
                             self.root_path, 'resources', self.servicesProvided, self.iconPath, '_'.join((n[0], n[1], str(n[2]))) + '.svg')):
-                        self.icons.append(n)
+                        if not plagiarism_check(n):
+                            self.icons.append(n)
             elif len(name) > 0:
                 if not os.path.exists(os.path.join(
                         self.root_path, 'resources', self.servicesProvided, self.iconPath, '_'.join((name[0], name[1], str(name[2]))) + '.svg')):
-                    self.icons.append(name)
+                    if not plagiarism_check(name):
+                        self.icons.append(name)
+
+        print(f"待下载图标列表: {self.icons}")
 
         if len(self.icons) > 0 and self.timer is None:
             try:
@@ -337,10 +350,5 @@ class SimpleIconsBase(IconFontBase):
         if os.path.exists(self.resourcePath):
             self.resource.load()
             self.setAttr()
-
-
-
-
-
 
 

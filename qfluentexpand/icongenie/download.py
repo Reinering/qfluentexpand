@@ -79,7 +79,7 @@ class AsyncDownloader:
         Returns:
             DownloadResult: 下载结果对象
         """
-        file_path = self._get_file_path(icon_name, color, size)
+        file_path = self._get_file_path(icon_name.replace(':', '-'), color, size)
         task_key = f"{icon_name}_{color}_{size}"
 
         # 检查文件是否已存在
@@ -142,13 +142,27 @@ class AsyncIconifyDownloader(AsyncDownloader):
         super().__init__(save_dir)
         self._library = "material-symbols"
 
-    def _get_icon_url(self, icon_name: str) -> str:
+    def _get_icon_url(self, name: str) -> str:
         """生成图标下载URL
             备用：
             https://api.simplesvg.com
             https://api.unisvg.com
         """
-        return f"https://api.iconify.design/{self._library}/{icon_name}.svg"
+        tmp = name.split(':')
+        if len(tmp) == 2:
+            library = tmp[0]
+            icon_name = tmp[1]
+        else:
+            library = self._library
+            icon_name = tmp[0]
+
+        return f"https://api.iconify.design/{library}/{icon_name}.svg"
+
+    async def close(self):
+        """关闭下载器"""
+        if self._session:
+            await self._session.close()
+            self._session = None
 
 
 class AsyncGoogleDownloader(AsyncDownloader):

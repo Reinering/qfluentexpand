@@ -44,20 +44,20 @@ class QFluentIcon():
     @classmethod
     def iconIfy(cls, name, theme=Theme.AUTO, reverse=False):
         try:
-            name = name.upper()
-            IconifyIconBase.get(name)
+            icon_name = name.replace(":", "-").upper()
+            IconifyIconBase.get(icon_name)
 
             # 判断是否打包
             if not getattr(sys, 'frozen', False) and not '__compiled__' in globals():
                 theme = qconfig.theme if theme == Theme.AUTO else theme
                 if os.path.exists(os.path.join(QFluentManager.iconify.getIconPath(),
-                                               f"{name.lower()}_{getIconColor(theme, reverse=reverse)}_{QFluentManager.iconify.size}.svg")):
-                    return getattr(IconifyIconBase, name)
+                                               f"{icon_name.lower()}_{getIconColor(theme, reverse=reverse)}_{QFluentManager.iconify.size}.svg")):
+                    return getattr(IconifyIconBase, icon_name)
                 else:
                     QFluentManager.iconify.download(name.lower())
                     return QIcon()
 
-            return getattr(IconifyIconBase, name)
+            return getattr(IconifyIconBase, icon_name)
         except AttributeError as e:
             print(e)
             # 判断是否打包

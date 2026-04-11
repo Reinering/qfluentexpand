@@ -49,6 +49,18 @@
     QFluentIcon.iconIfy("SETTING")   # 获取google font icon
     # button = PushButton(FluentIcon.SETTING, 'Setting', self)         # 可以将[PyQt-Fluent-Widgets]的FluentIcon
     button = PushButton(QFluentIcon.iconIfy("SETTING"), 'Setting', self)   # 可以将[PyQt-Fluent-Widgets]的FluentIcon 直接替换为QFluentIcon.iconIfy("Setting")
+  
+    # iconIfy是多仓库的，默认是google font icon库，如果需要使用其他icon库，可以在iconIfy中指定icon库名称，有两种方法：
+    1、 建议使用iconIfy默认的携带仓库名的icon name，来获取icon，这样可以避免icon name重复导致的icon获取错误问题
+        QFluentIcon.iconIfy("iconoir:bubble-income")
+    2、 也可以在iconIfy中指定iconify设置仓库名
+        iconify = QFluentManager.iconify
+        iconify.setLibrary("iconoir")
+        # 获取icon
+        QFluentIcon.iconIfy("SETTING")
+    注意：
+    1、两种方法同时使用时，第一种方法优先级高于第二种方法，也就是说，如果icon name中携带了仓库名，那么iconIfy会优先使用携带的仓库名来获取icon，而不是使用iconify设置的默认仓库名。
+    2、两种方法都不使用时，iconIfy会默认使用iconify设置的默认仓库(material-symbols)来获取icon，。
     
 ```
 
@@ -94,6 +106,7 @@ Setting icon 会自动加载 google font icon
         1> pyinstaller:  addData: ./resource_qfe_rc.py;./
         2> nuitka:  include-data-files: ./resource_qfe_rc.py=./resource_qfe_rc.py
     2、icon下载是在程序启动开始前期，之后更改并不会触发下载，需要重新启动程序。多主题下，请切换主题后重新启动程序，促使下载新的icon。下载失败，也是需要重新启动程序，重新下载。
+    3、特别注意：下载资源时，建议切换theme，下载不同颜色的icon，虽然icon的颜色随theme，但是当控件有背景颜色时，icon就会放弃跟随theme的颜色，使用icon本身的颜色，所以建议下载不同颜色的icon，以适应不同背景颜色的控件。
 
 ### 其他属性设置
 ```
