@@ -17,6 +17,7 @@ class STYLESHEET(StyleSheetBase, Enum):
     EXPAND_CARD = "expand_card"
     TOOLBAR = "toolbar"
     BUTTON = "button"
+    FLOATING_BALL = "floating_ball"
 
 
     def path(self, theme=Theme.AUTO):
