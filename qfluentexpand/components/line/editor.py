@@ -7,6 +7,7 @@ email: nbxlc@hotmail.com
 
 
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QShortcut, QKeySequence
 from PySide6.QtWidgets import (
     QWidget, QSizePolicy, QSpacerItem
 )
@@ -36,3 +37,34 @@ class Line(LineEdit):
         self.hBoxLayout.removeWidget(widget)
 
 
+class ShortcutRecorderLineEdit(LineEdit):
+    """Shortcut Recorder Line Edit"""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setPlaceholderText("点击此处并按下快捷键...")
+        self.setReadOnly(True)  # 禁止用户直接输入文本
+        self.current_sequence = None
+
+    def keyPressEvent(self, event):
+        key = event.key()
+        modifiers = event.modifiers()
+
+        # 1. 忽略单独按下修饰键的情况
+        if key in [Qt.Key.Key_Control, Qt.Key.Key_Shift, Qt.Key.Key_Alt, Qt.Key.Key_Meta]:
+            return
+
+        # 2. 如果按下 Backspace 或 Delete，清空已录制的快捷键
+        if key in [Qt.Key.Key_Backspace, Qt.Key.Key_Delete]:
+            self.clear()
+            self.current_sequence = None
+            return
+
+        # 3. 处理组合键（直接使用位运算符 | 组合枚举和键值）
+        extracted_key = modifiers.value | key
+
+        # 4. 转换为 QKeySequence 并显示
+        self.current_sequence = QKeySequence(extracted_key)
+        self.setText(self.current_sequence.toString())
+
+        self.clearFocus()
